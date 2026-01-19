@@ -1,0 +1,355 @@
+"use client";
+import React, { useState, useEffect } from "react";
+import { useAdminJobCreate } from "./UseAdminJobCreate";
+import AdminLayout from "@/components/AdminComponents/AdminLayout";
+import {
+  Briefcase,
+  MapPin,
+  DollarSign,
+  Link as LinkIcon,
+  FileText,
+  PlusCircle,
+  Building,
+  Clock,
+  Code,
+  Calendar,
+  Image as ImageIcon,
+} from "lucide-react";
+import Skeleton from "@/components/FormComponents/Skeleton";
+import withAuth from "@/middleware/withAuth";
+
+function AdminJobCreate() {
+  const [loading, setLoading] = useState(true);
+
+  const { formik, isSubmitting } = useAdminJobCreate();
+
+  useEffect(() => {
+    const timer = setTimeout(() => setLoading(false), 500); // simulate loading
+    return () => clearTimeout(timer);
+  }, []);
+
+  const inputStyle =
+    "w-full px-4 py-2.5 rounded-lg border border-gray-300 bg-white text-gray-800 shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition duration-200 ease-in-out";
+
+  const labelStyle = "block mb-2 text-sm font-medium text-gray-700";
+  const errorStyle = "text-red-600 text-sm mt-1 flex items-center gap-1";
+
+  return (
+    <AdminLayout>
+      <div className="min-h-screen bg-gray-100 text-gray-800">
+        <div className="bg-white rounded-2xl shadow-xl p-8 sm:p-10 border border-gray-200 max-w-4xl mx-auto mt-6">
+          <h2 className="text-3xl font-bold mb-8 text-center text-gray-900 flex items-center justify-center gap-3">
+            <PlusCircle size={32} className="text-purple-600" />
+            {loading ? <Skeleton width="w-48" height="h-8" /> : "Create New Job"}
+          </h2>
+
+          {loading ? (
+             <div className="space-y-8">
+               <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-7">
+                 <Skeleton width="w-40" height="h-5" />
+                 <Skeleton height="h-10" />
+                 <Skeleton width="w-40" height="h-5" />
+                 <Skeleton height="h-10" />
+               </div>
+               <Skeleton width="w-40" height="h-5" />
+               <Skeleton height="h-24" />
+             </div>
+          ) : (
+            <form onSubmit={formik.handleSubmit} className="space-y-8">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-7 border-b border-gray-200 pb-8">
+                <h3 className="md:col-span-2 text-xl font-semibold text-gray-800 mb-4 flex items-center gap-2">
+                  <Briefcase size={22} className="text-purple-500" /> Basic Information
+                </h3>
+
+                <div>
+                  <label htmlFor="title" className={labelStyle}>
+                    Job Title <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    id="title"
+                    type="text"
+                    name="title"
+                    className={inputStyle}
+                    placeholder="e.g., Software Engineer"
+                    {...formik.getFieldProps("title")}
+                  />
+                  {formik.touched.title && formik.errors.title && (
+                    <p className={errorStyle}>{formik.errors.title}</p>
+                  )}
+                </div>
+
+                <div>
+                  <label htmlFor="company" className={labelStyle}>
+                    Company Name <span className="text-red-500">*</span>
+                  </label>
+                  <div className="relative">
+                    <Building className="absolute left-3 top-3 text-gray-400" size={18} />
+                    <input
+                      id="company"
+                      type="text"
+                      name="company"
+                      className={`${inputStyle} pl-10`}
+                      placeholder="e.g., Tech Corp"
+                      {...formik.getFieldProps("company")}
+                    />
+                  </div>
+                  {formik.touched.company && formik.errors.company && (
+                    <p className={errorStyle}>{formik.errors.company}</p>
+                  )}
+                </div>
+
+                <div>
+                  <label htmlFor="location" className={labelStyle}>
+                    Location <span className="text-red-500">*</span>
+                  </label>
+                  <div className="relative">
+                    <MapPin className="absolute left-3 top-3 text-gray-400" size={18} />
+                    <input
+                      id="location"
+                      type="text"
+                      name="location"
+                      className={`${inputStyle} pl-10`}
+                      placeholder="e.g., Remote / New York"
+                      {...formik.getFieldProps("location")}
+                    />
+                  </div>
+                  {formik.touched.location && formik.errors.location && (
+                    <p className={errorStyle}>{formik.errors.location}</p>
+                  )}
+                </div>
+
+                <div>
+                  <label htmlFor="type" className={labelStyle}>
+                    Job Type <span className="text-red-500">*</span>
+                  </label>
+                  <select
+                    id="type"
+                    name="type"
+                    className={inputStyle}
+                    {...formik.getFieldProps("type")}
+                  >
+                    <option value="Full-time">Full-time</option>
+                    <option value="Part-time">Part-time</option>
+                    <option value="Contract">Contract</option>
+                    <option value="Internship">Internship</option>
+                    <option value="Temporary">Temporary</option>
+                  </select>
+                  {formik.touched.type && formik.errors.type && (
+                    <p className={errorStyle}>{formik.errors.type}</p>
+                  )}
+                </div>
+
+                <div>
+                  <label htmlFor="salary" className={labelStyle}>
+                    Salary Range
+                  </label>
+                  <div className="relative">
+                    <DollarSign className="absolute left-3 top-3 text-gray-400" size={18} />
+                    <input
+                      id="salary"
+                      type="text"
+                      name="salary"
+                      className={`${inputStyle} pl-10`}
+                      placeholder="e.g., $100k - $120k"
+                      {...formik.getFieldProps("salary")}
+                    />
+                  </div>
+                  {formik.touched.salary && formik.errors.salary && (
+                    <p className={errorStyle}>{formik.errors.salary}</p>
+                  )}
+                </div>
+
+                <div>
+                  <label htmlFor="applicationLink" className={labelStyle}>
+                    Application Link
+                  </label>
+                  <div className="relative">
+                    <LinkIcon className="absolute left-3 top-3 text-gray-400" size={18} />
+                    <input
+                      id="applicationLink"
+                      type="text"
+                      name="applicationLink"
+                      className={`${inputStyle} pl-10`}
+                      placeholder="https://..."
+                      {...formik.getFieldProps("applicationLink")}
+                    />
+                  </div>
+                  {formik.touched.applicationLink && formik.errors.applicationLink && (
+                    <p className={errorStyle}>{formik.errors.applicationLink}</p>
+                  )}
+                </div>
+
+                <div>
+                  <label htmlFor="companyIcon" className={labelStyle}>
+                    Company Icon
+                  </label>
+                  <div className="flex flex-col gap-4">
+                    <div className="relative">
+                        <ImageIcon className="absolute left-3 top-3 text-gray-400" size={18} />
+                        <input
+                          id="companyIcon"
+                          type="file"
+                          accept="image/*"
+                          name="companyIcon"
+                          className={`${inputStyle} pl-10`}
+                          onChange={(event) => {
+                            formik.setFieldValue("companyIcon", event.currentTarget.files[0]);
+                          }}
+                        />
+                    </div>
+                    {formik.values.companyIcon && (
+                        <div className="mt-2">
+                            <img 
+                                src={URL.createObjectURL(formik.values.companyIcon)} 
+                                alt="Preview" 
+                                className="h-20 w-20 object-contain rounded-lg border border-gray-200"
+                            />
+                        </div>
+                    )}
+                  </div>
+                  {formik.touched.companyIcon && formik.errors.companyIcon && (
+                    <p className={errorStyle}>{formik.errors.companyIcon}</p>
+                  )}
+                </div>
+
+                <div>
+                  <label htmlFor="experience" className={labelStyle}>
+                    Experience
+                  </label>
+                  <div className="relative">
+                     <Clock className="absolute left-3 top-3 text-gray-400" size={18} />
+                    <input
+                        id="experience"
+                        type="text"
+                        name="experience"
+                        className={`${inputStyle} pl-10`}
+                        placeholder="e.g., 2-4 years"
+                        {...formik.getFieldProps("experience")}
+                    />
+                  </div>
+                  {formik.touched.experience && formik.errors.experience && (
+                    <p className={errorStyle}>{formik.errors.experience}</p>
+                  )}
+                </div>
+
+                <div>
+                  <label htmlFor="noticePeriod" className={labelStyle}>
+                    Notice Period
+                  </label>
+                  <div className="relative">
+                     <Clock className="absolute left-3 top-3 text-gray-400" size={18} />
+                    <input
+                        id="noticePeriod"
+                        type="text"
+                        name="noticePeriod"
+                        className={`${inputStyle} pl-10`}
+                        placeholder="e.g., Immediate / 30 days"
+                        {...formik.getFieldProps("noticePeriod")}
+                    />
+                  </div>
+                  {formik.touched.noticePeriod && formik.errors.noticePeriod && (
+                    <p className={errorStyle}>{formik.errors.noticePeriod}</p>
+                  )}
+                </div>
+
+                 <div>
+                  <label htmlFor="expireIn" className={labelStyle}>
+                    Expire In
+                  </label>
+                  <div className="relative">
+                     <Calendar className="absolute left-3 top-3 text-gray-400" size={18} />
+                    <input
+                        id="expireIn"
+                        type="date"
+                        name="expireIn"
+                        className={`${inputStyle} pl-10`}
+                        {...formik.getFieldProps("expireIn")}
+                    />
+                  </div>
+                  {formik.touched.expireIn && formik.errors.expireIn && (
+                    <p className={errorStyle}>{formik.errors.expireIn}</p>
+                  )}
+                </div>
+
+              </div>
+
+              <div className="border-b border-gray-200 pb-8">
+                <h3 className="text-xl font-semibold text-gray-800 mb-4 flex items-center gap-2">
+                  <FileText size={22} className="text-purple-500" /> Job Details
+                </h3>
+
+                <div className="mb-6">
+                  <label htmlFor="description" className={labelStyle}>
+                    Description <span className="text-red-500">*</span>
+                  </label>
+                  <textarea
+                    id="description"
+                    name="description"
+                    rows="5"
+                    className={inputStyle}
+                    placeholder="Enter job description..."
+                    {...formik.getFieldProps("description")}
+                  />
+                  {formik.touched.description && formik.errors.description && (
+                    <p className={errorStyle}>{formik.errors.description}</p>
+                  )}
+                </div>
+
+                <div className="mb-6">
+                  <label htmlFor="requirements" className={labelStyle}>
+                    Requirements
+                  </label>
+                  <textarea
+                    id="requirements"
+                    name="requirements"
+                    rows="5"
+                    className={inputStyle}
+                    placeholder="Enter job requirements..."
+                    {...formik.getFieldProps("requirements")}
+                  />
+                  {formik.touched.requirements && formik.errors.requirements && (
+                    <p className={errorStyle}>{formik.errors.requirements}</p>
+                  )}
+                </div>
+
+                 <div className="mb-6">
+                  <label htmlFor="skills" className={labelStyle}>
+                    Skills
+                  </label>
+                  <div className="relative">
+                    <Code className="absolute left-3 top-3 text-gray-400" size={18} />
+                    <textarea
+                        id="skills"
+                        name="skills"
+                        rows="3"
+                        className={`${inputStyle} pl-10`}
+                        placeholder="e.g., React, Node.js, SQL (comma separated)"
+                        {...formik.getFieldProps("skills")}
+                    />
+                  </div>
+                  {formik.touched.skills && formik.errors.skills && (
+                    <p className={errorStyle}>{formik.errors.skills}</p>
+                  )}
+                </div>
+              </div>
+
+              <div className="flex justify-end pt-4">
+                <button
+                  type="submit"
+                  disabled={isSubmitting}
+                  className={`px-8 py-3 bg-purple-600 text-white font-semibold rounded-lg shadow-md hover:bg-purple-700 transition-all duration-300 transform hover:-translate-y-0.5 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 ${
+                    isSubmitting ? "opacity-70 cursor-not-allowed" : ""
+                  }`}
+                >
+                  {isSubmitting ? "Creating..." : "Create Job"}
+                </button>
+              </div>
+            </form>
+          )}
+        </div>
+      </div>
+    </AdminLayout>
+  );
+}
+
+export default withAuth(AdminJobCreate, ["admin"]);

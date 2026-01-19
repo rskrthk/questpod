@@ -1,0 +1,123 @@
+{personalDetails.firstName} {personalDetails.lastName}
+{personalDetails.profession}
+
+---
+
+**CONTACTS**
+Phone: {personalDetails.phone}
+Email: {personalDetails.email}
+Website: {websiteSocialMedia.website}
+LinkedIn: {websiteSocialMedia.linkedin}
+GitHub: {websiteSocialMedia.github}
+Address: {personalDetails.address}
+
+---
+
+**SUMMARY**
+{#profileSummary}
+- {.}
+{/profileSummary}
+
+---
+
+**EXPERIENCE**
+{#workExperience}
+**{role}** at **{company}**, {location}
+{startDate} - {endDate}
+{description}  <-- This field contains combined info with newlines
+{/workExperience}
+
+---
+
+**PROJECTS**
+{#projects}
+**{projectTitle}** ({domain})
+{startDate} - {endDate}
+{description}  <-- This field contains combined info with newlines
+Link: {link}
+{/projects}
+
+---
+
+**INTERNSHIPS**
+{#internships}
+**{role}** at **{company}**, {location}
+{startDate} - {endDate}
+{description}  <-- This field contains combined info with newlines
+{/internships}
+
+---
+
+**EDUCATION**
+{#education}
+**{degree}** in {fieldOfStudy}
+{university}, {location} ({year})
+GPA: {gpa}
+{/education}
+
+---
+
+**KEY ACHIEVEMENTS**
+{#keySkills}
+- {.}
+{/keySkills}
+
+---
+
+**LANGUAGES**
+{#languages}
+- {name} ({proficiency})
+{/languages}
+
+---
+
+**COURSES**
+{#certifications}
+**{name}** from {organization} ({date})
+{description}
+{/certifications}
+
+---
+
+**AWARDS**
+{#awards}
+- {.}
+{/awards}
+
+---
+
+**HOBBIES**
+{#hobbies}
+- {.}
+{/hobbies}
+
+---
+
+**EXTRA-CURRICULAR ACTIVITIES**
+{#extraCurricularActivities}
+- {.}
+{/extraCurricularActivities}
+
+---
+
+**VOLUNTEERING**
+{#volunteering}
+- {.}
+{/volunteering}
+
+---
+
+**PUBLICATIONS**
+{#publications}
+- {.}
+{/publications}
+
+---
+
+**CUSTOM CONTENT**
+{#customContent.MyCustomSectionTitle}  <-- Replace "MyCustomSectionTitle" with actual keys from customContent
+- {.}
+{/customContent.MyCustomSectionTitle}
+{#customContent.AnotherCustomSection}
+- {.}
+{/customContent.AnotherCustomSection}

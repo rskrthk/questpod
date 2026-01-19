@@ -1,0 +1,12 @@
+# *
+User-agent: *
+Allow: /
+Disallow: /api/
+Disallow: /_next/
+Disallow: /static/
+
+# Host
+Host: https://www.questpodai.com
+
+# Sitemaps
+Sitemap: https://www.questpodai.com/sitemap.xml

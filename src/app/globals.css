@@ -1,0 +1,335 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: #ffffff;
+  --foreground: #171717;
+  --font-body: var(--font-inter);
+}
+/* globals.css */
+
+body {
+  font-family: var(--font-body);
+}
+
+.bg-charcoal {
+  --tw-bg-opacity: 1;
+  background-color: rgb(8 9 10 / var(--tw-bg-opacity, 1));
+}
+.bg-back {
+  background-color: #733aed;
+}
+.text-primary {
+  color: #ffffff;
+}
+.text-secondary {
+  color: #93a3af;
+}
+.text-theme-color {
+  color: #733aed;
+}
+
+/* styles.css or global.css */
+.button-theme-gradient {
+  @apply bg-gradient-to-r from-purple-700 to-fuchsia-600 text-white hover:opacity-90;
+}
+/* ----------------------------------------- */
+
+.theme-colors {
+  @apply bg-gradient-to-r from-purple-700 to-fuchsia-600;
+}
+
+.section-header-underline {
+  @apply content-[''] block w-[60px] h-[4px] bg-blue-500 mx-auto mt-[10px] rounded-sm;
+}
+
+.theme-icons {
+  @apply text-purple-600;
+}
+
+.theme-text {
+  @apply text-purple-600;
+}
+
+/* ----------------------------------------- */
+
+.no-select {
+  -webkit-touch-callout: none; /* iOS Safari */
+  -webkit-user-select: none; /* Safari */
+  -khtml-user-select: none; /* Konqueror HTML */
+  -moz-user-select: none; /* Old versions of Firefox */
+  -ms-user-select: none; /* Internet Explorer/Edge */
+  user-select: none; /* Non-prefixed version, currently supported by Chrome, Edge, Opera and Firefox */
+}
+
+.container-x {
+  max-width: 1300px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* Hide scrollbar but allow scroll - works in Chrome */
+.scrollbar-hide {
+  overflow: auto;
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE and Edge */
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Opera */
+}
+
+/* Scrollbar Styling */
+/* WebKit Browsers (Chrome, Edge, Safari) */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(243, 244, 246, 0.1); /* light gray transparent track */
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(
+    to bottom,
+    #a855f7,
+    #ec4899
+  ); /* purple to pink gradient */
+  border-radius: 10px;
+  border: 2px solid transparent;
+  background-clip: content-box;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(
+    to bottom,
+    #9333ea,
+    #db2777
+  ); /* deeper hover shade */
+}
+
+/* Firefox Support */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #a855f7 #f3f4f6; /* thumb color and track color */
+}
+
+.cyber-background {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(10, 10, 15, 0.97);
+  pointer-events: none;
+  z-index: -1;
+  overflow: hidden;
+}
+
+.cyber-grid {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 150%;
+  height: 150%;
+  background-image: linear-gradient(transparent 97%, rgba(0, 255, 255, 0.1) 0),
+    linear-gradient(90deg, transparent 97%, rgba(0, 255, 255, 0.1) 0);
+  background-size: 40px 40px;
+  opacity: 0.3;
+  transform-origin: top left;
+  animation: moveGrid 30s linear infinite;
+}
+
+.cyber-glow {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(
+    circle at 30% 50%,
+    rgba(0, 255, 255, 0.1) 0,
+    transparent 50%
+  );
+  animation: pulseGlow 10s ease-in-out infinite;
+  mix-blend-mode: screen;
+}
+
+.cyber-fade {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 300px;
+  background: linear-gradient(
+    180deg,
+    transparent,
+    rgba(0, 0, 0, 0.9) 50%,
+    #08090a
+  );
+}
+
+.wave-container {
+  display: flex;
+  height: 3rem;
+  align-items: center;
+  gap: 2px;
+}
+
+.bar-wave {
+  height: 4px;
+  width: 4px;
+  border-radius: 9999px;
+  background: linear-gradient(0deg, #06b6d4, #3b82f6);
+  transform-origin: bottom;
+  animation: wave 1.5s ease-in-out infinite;
+  transition: height 0.3s ease;
+}
+
+.glass {
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+@media print {
+  /* General Print Styles */
+  body {
+    -webkit-print-color-adjust: exact !important; /* Forces Chrome to print background colors and images */
+    print-color-adjust: exact !important;
+    margin: 0; /* Remove default body margins */
+    padding: 0; /* Remove default body padding */
+  }
+
+  /* Optimize for A4 or Letter page size */
+  @page {
+    size: Letter portrait; /* or A4 portrait */
+    margin: 0.5in; /* Consistent with html2pdf.js margin */
+  }
+
+  /* Hide elements not needed in print */
+  .no-print {
+    display: none !important;
+  }
+
+  /* Ensure background colors and images are printed */
+  .print-background {
+    background-color: inherit !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  /* Force page breaks where needed */
+  .page-break-before {
+    page-break-before: always !important;
+  }
+
+  .page-break-after {
+    page-break-after: always !important;
+  }
+
+  /* Avoid breaking elements across pages - MORE AGGRESSIVE */
+  /* Apply to sections and individual resume entries */
+  section, .print-avoid-break {
+    page-break-inside: avoid !important;
+  }
+  /* Ensure lists and list items stay together */
+  ul, ol, li {
+    page-break-inside: avoid !important;
+  }
+  .avoid-break { /* General class for other elements you don't want to break */
+    page-break-inside: avoid !important;
+  }
+
+  /* Adjust font sizes or line heights for print */
+  h1 {
+    font-size: 20pt !important;
+  }
+  h2 {
+    font-size: 14pt !important;
+  }
+  p, li {
+    font-size: 9pt !important; /* Common font size for body text in print resumes */
+    line-height: 1.4 !important; /* Optimal line height for readability */
+  }
+
+  /* Fine-tune bullet point spacing for print - REVISED */
+  ul.list-disc {
+    list-style-position: outside !important; /* Crucial for consistent bullet placement */
+    margin-left: 20pt !important; /* Overall indentation of the list from the left edge of the content area */
+    padding-left: 0 !important; /* Reset any default or Tailwind padding on the ul itself */
+  }
+  ul.list-disc li {
+    margin-left: 0 !important; /* Reset any margin on li */
+    text-indent: -10pt !important; /* Pulls the bullet back into the margin area */
+    padding-left: 10pt !important; /* Pushes the text to the right, creating space between bullet and text */
+    margin-bottom: 2pt !important; /* Small vertical gap between bullet points */
+  }
+
+  /* Border Refinement */
+  .border-b {
+    border-bottom: 1px solid #ccc !important; /* Lighter, more refined border color */
+  }
+
+  /* Adjust spacing for better print layout - REVISED */
+  /* Target the main resume container's padding */
+  .max-w-4xl.mx-auto.p-6 {
+    padding: 0 !important; /* Remove padding from this div as @page margins handle it */
+  }
+
+  .mb-4 { /* Target header margin */
+    margin-bottom: 10pt !important;
+  }
+  .mb-3 { /* Targeting adjusted Tailwind classes for sections */
+    margin-bottom: 8pt !important;
+  }
+  .mt-1\.5 { /* Targeting adjusted Tailwind classes for sub-sections */
+    margin-top: 6pt !important;
+  }
+  .pb-1 { /* Padding below section titles */
+    padding-bottom: 3pt !important;
+  }
+  .space-y-0\.5 > :not([hidden]) ~ :not([hidden]) { /* For tight vertical spacing in personal details */
+    margin-top: 2pt !important;
+  }
+}
+
+@media (max-width: 1024px) {
+  .container-x {
+    max-width: 1000px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+}
+
+@keyframes wave {
+  0%,
+  100% {
+    height: 4px;
+  }
+  50% {
+    height: 30px;
+  }
+}
+
+@keyframes moveGrid {
+  0% {
+    transform: translate(0, 0);
+  }
+  100% {
+    transform: translate(-40px, -40px);
+  }
+}
+
+@keyframes pulseGlow {
+  0%,
+  100% {
+    opacity: 0.2;
+  }
+  50% {
+    opacity: 0.6;
+  }
+}

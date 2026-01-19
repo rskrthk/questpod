@@ -1,0 +1,573 @@
+/* styles/Resume.module.css */
+
+.resumePageContainer {
+  min-height: 100vh;
+  background-color: #f8f8f8; /* Light gray background */
+  font-family: Arial, sans-serif;
+  color: #333; /* Darker gray for text */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.resumeContainer {
+  max-width: 21cm; /* A4 width */
+  margin: 20px auto;
+  background-color: #ffffff;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid #e0e0e0;
+}
+
+/* Header Section */
+.resumeHeader {
+  background: linear-gradient(to right, #2563eb, #3b82f6); /* Blue gradient */
+  color: #ffffff;
+  padding: 40px;
+  position: relative;
+}
+
+.headerContent {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+}
+
+@media (min-width: 768px) {
+  .headerContent {
+    flex-direction: row;
+    text-align: left;
+  }
+}
+
+.profileSection {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
+  text-align: center;
+}
+
+@media (min-width: 768px) {
+  .profileSection {
+    flex-direction: row;
+    text-align: left;
+  }
+}
+
+.profileImageWrapper {
+  width: 112px;
+  height: 112px;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 4px solid #ffffff;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  flex-shrink: 0;
+}
+
+.profileImage {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50%; /* Ensure image is perfectly round */
+}
+
+.fullName {
+  font-size: 3rem; /* ~48px */
+  font-weight: 800; /* Extra bold */
+  letter-spacing: -0.05em;
+  line-height: 1.1;
+  margin: 0;
+}
+
+@media (min-width: 640px) {
+  .fullName {
+    font-size: 3.75rem; /* ~60px */
+  }
+}
+
+.profession {
+  font-size: 1.5rem; /* ~24px */
+  margin-top: 8px;
+  font-weight: 500;
+  opacity: 0.9;
+}
+
+.contactInfo {
+  text-align: center;
+  margin-top: 24px;
+  font-size: 1.125rem; /* ~18px */
+  line-height: 1.5; /* Spacing between lines */
+}
+
+@media (min-width: 768px) {
+  .contactInfo {
+    text-align: right;
+    margin-top: 0;
+  }
+}
+
+.contactInfo p,
+.contactInfo a {
+  margin: 0;
+  display: block; /* Ensures each contact detail is on its own line */
+}
+
+.contactInfo a {
+  color: #ffffff;
+  text-decoration: none;
+  transition: text-decoration 0.2s ease-in-out;
+}
+
+.contactInfo a:hover {
+  text-decoration: underline;
+}
+
+/* Profile Summary Section */
+.sectionSummary {
+  padding: 32px;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.sectionText {
+  color: #4a5568; /* Darker gray */
+  line-height: 1.6;
+  font-size: 1rem;
+}
+
+/* Main Content Grid (Two Columns) */
+.mainContentGrid {
+  display: grid;
+  grid-template-columns: 1fr; /* Single column on small screens */
+  gap: 32px;
+  padding: 32px;
+}
+
+@media (min-width: 768px) {
+  .mainContentGrid {
+    grid-template-columns: 2fr 1fr; /* Two columns on larger screens */
+  }
+}
+
+/* Common Section Styling */
+.sectionCommon {
+  margin-bottom: 32px; /* Space between sections */
+}
+
+/* To avoid extra margin after the last section in a column */
+.leftColumn > .sectionCommon:last-child,
+.rightColumn > .sectionCommon:last-child {
+  margin-bottom: 0;
+}
+
+.sectionTitle {
+  font-size: 1.5rem; /* ~24px */
+  font-weight: 700; /* Bold */
+  color: #2563eb; /* Blue */
+  margin-bottom: 16px;
+  letter-spacing: 0.025em; /* Tracking wide */
+}
+
+/* Work Experience, Projects, Internships - Common Item Styling */
+.experienceItem,
+.projectItem,
+.internshipItem {
+  margin-bottom: 24px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid #e2e8f0; /* Light gray border */
+}
+
+.lastItem {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.experienceHeader,
+.projectHeader,
+.internshipHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  margin-bottom: 8px;
+}
+
+.experienceTitle,
+.projectTitle,
+.internshipRole {
+  font-size: 1.25rem; /* ~20px */
+  font-weight: 600; /* Semi-bold */
+  color: #1a202c; /* Dark gray */
+  line-height: 1.375; /* Snug line height */
+  margin: 0;
+}
+
+.aiPoweredTag {
+  font-size: 0.75rem; /* ~12px */
+  background-color: #dbeafe; /* Light blue */
+  color: #1e40af; /* Darker blue */
+  padding: 4px 8px;
+  border-radius: 9999px; /* Full rounded */
+  font-weight: 500;
+  white-space: nowrap;
+  margin-left: 8px;
+  display: inline-block; /* Ensures it plays nicely with text */
+}
+
+.experienceCompany {
+  font-size: 1rem;
+  color: #4a5568; /* Darker gray */
+  margin-top: 4px;
+}
+
+.experienceDates,
+.projectDates,
+.internshipDates {
+  color: #4a5568; /* Gray */
+  font-size: 0.875rem; /* ~14px */
+  font-weight: 500;
+  white-space: nowrap;
+  margin-top: 4px;
+}
+
+.experienceMeta {
+  color: #4a5568; /* Gray */
+  font-style: italic;
+  font-size: 0.875rem;
+  margin-bottom: 8px;
+}
+
+.experienceGoal {
+  color: #4a5568;
+  margin-bottom: 8px;
+  font-size: 1rem;
+}
+
+.experienceResponsibilities {
+  list-style: disc;
+  list-style-position: outside;
+  margin-left: 20px;
+  padding: 0;
+  line-height: 1.5;
+  color: #4a5568;
+  font-size: 1rem;
+}
+
+.experienceResponsibilities li {
+  margin-bottom: 4px;
+}
+
+.experienceDetails {
+  margin-top: 8px;
+  font-size: 0.875rem;
+  color: #4a5568;
+  line-height: 1.5;
+}
+
+.experienceDetails p {
+  margin: 0;
+}
+
+.experienceDetails strong {
+  font-weight: 600; /* Semi-bold */
+}
+
+/* Projects */
+.projectLink a {
+  color: #2563eb;
+  text-decoration: none;
+  font-size: 0.875rem;
+  margin-bottom: 8px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.projectLink a:hover {
+  text-decoration: underline;
+}
+
+.projectDescription {
+  color: #4a5568;
+  margin-bottom: 8px;
+  font-size: 1rem;
+}
+
+.projectTech {
+  color: #4a5568;
+  font-size: 0.875rem;
+}
+
+.projectTech strong {
+  font-weight: 600;
+}
+
+/* Internships (specific styles for description) */
+.internshipDescription {
+  color: #4a5568;
+  font-size: 1rem;
+}
+
+/* Key Skills */
+.skillsList {
+  color: #4a5568;
+  line-height: 1.6;
+  font-size: 1rem;
+  margin: 0;
+}
+
+.skillItem {
+  font-weight: 600; /* Semi-bold for individual skills */
+}
+
+/* Education */
+.educationItem {
+  margin-bottom: 16px;
+}
+
+.educationDegree {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #1a202c;
+  margin: 0;
+}
+
+.educationUniversity {
+  color: #333;
+  font-size: 1rem;
+  margin-top: 4px;
+}
+
+.educationDates {
+  color: #4a5568;
+  font-size: 0.875rem;
+  margin-top: 4px;
+}
+
+/* Certifications */
+.certificationItem {
+  margin-bottom: 16px;
+}
+
+.certificationName {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #1a202c;
+  margin: 0;
+}
+
+.certificationOrg {
+  color: #333;
+  font-size: 1rem;
+  margin-top: 4px;
+}
+
+.certificationDate {
+  color: #4a5568;
+  font-size: 0.875rem;
+  margin-top: 4px;
+}
+
+/* Languages */
+.languageList {
+  list-style: disc;
+  list-style-position: inside;
+  color: #4a5568;
+  font-size: 1rem;
+  padding: 0;
+  line-height: 1.5;
+}
+
+.languageList li {
+  margin-bottom: 4px;
+}
+
+.languageProficiency {
+  font-size: 0.875rem;
+  color: #4a5568;
+}
+
+/* Hobbies */
+.hobbiesList {
+  color: #4a5568;
+  font-size: 1rem;
+  margin: 0;
+}
+
+/* Extra-curricular Activities */
+.activitiesList {
+  list-style: disc;
+  list-style-position: inside;
+  color: #4a5568;
+  font-size: 1rem;
+  padding: 0;
+  line-height: 1.5;
+}
+
+.activitiesList li {
+  margin-bottom: 4px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 767px) {
+  .resumeContainer {
+    margin: 10px;
+    border-radius: 8px;
+  }
+
+  .resumeHeader {
+    padding: 30px;
+  }
+
+  .fullName {
+    font-size: 2.5rem;
+  }
+
+  .profession {
+    font-size: 1.25rem;
+  }
+
+  .sectionSummary,
+  .mainContentGrid {
+    padding: 20px;
+  }
+
+  .sectionTitle {
+    font-size: 1.3rem;
+  }
+
+  .experienceTitle,
+  .projectTitle,
+  .internshipRole,
+  .educationDegree,
+  .certificationName {
+    font-size: 1.1rem;
+  }
+}
+
+/* Print Styles */
+@media print {
+  body {
+    background: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .resumePageContainer {
+    background-color: #fff; /* Ensure white background for print */
+  }
+
+  .resumeContainer {
+    box-shadow: none;
+    border: none;
+    margin: 0;
+    width: 21cm;
+    min-height: 29.7cm; /* A4 height */
+    page-break-after: always; /* Ensure new page for each resume if multiple */
+  }
+
+  .resumeHeader {
+    padding: 25px;
+  }
+
+  .headerContent {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    gap: 15px;
+  }
+
+  .profileSection {
+    flex-direction: row;
+    text-align: left;
+  }
+
+  .profileImageWrapper {
+    width: 90px;
+    height: 90px;
+    border: 2px solid #fff;
+  }
+
+  .fullName {
+    font-size: 2.2rem;
+  }
+
+  .profession {
+    font-size: 1.1rem;
+  }
+
+  .contactInfo {
+    font-size: 0.9rem;
+    text-align: right;
+  }
+
+  .contactInfo a {
+    text-decoration: none; /* Remove underlines for links in print */
+    color: inherit; /* Inherit color, don't force blue */
+  }
+
+  .sectionSummary,
+  .mainContentGrid {
+    padding: 20px 25px;
+  }
+
+  .mainContentGrid {
+    grid-template-columns: 2fr 1fr;
+    gap: 20px;
+  }
+
+  .sectionTitle {
+    font-size: 1.3rem;
+    margin-bottom: 10px;
+  }
+
+  .experienceItem,
+  .projectItem,
+  .internshipItem {
+    margin-bottom: 15px;
+    padding-bottom: 10px;
+  }
+
+  .experienceTitle,
+  .projectTitle,
+  .internshipRole,
+  .educationDegree,
+  .certificationName {
+    font-size: 1.05rem;
+  }
+
+  .experienceCompany,
+  .experienceGoal,
+  .experienceResponsibilities,
+  .experienceDetails,
+  .projectDescription,
+  .projectTech,
+  .internshipDescription,
+  .skillsList,
+  .educationUniversity,
+  .educationDates,
+  .certificationOrg,
+  .certificationDate,
+  .languageList,
+  .hobbiesList,
+  .activitiesList,
+  .sectionText {
+    font-size: 0.9rem;
+  }
+
+  .experienceDates,
+  .projectDates,
+  .internshipDates {
+    font-size: 0.8rem;
+  }
+
+  /* Ensure content doesn't break across pages awkwardly */
+  h2, h3 {
+    page-break-after: avoid;
+  }
+  ul, ol {
+    page-break-before: avoid;
+  }
+}
