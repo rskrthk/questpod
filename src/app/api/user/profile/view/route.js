@@ -21,11 +21,20 @@ export async function GET(req) {
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
 
-    // Exclude password
-    const { password, ...safeProfile } = profile[0];
+    // Destructure to separate heavy 'resume' field and 'password'
+    const { password, resume, ...safeProfile } = profile[0];
+
+    // If resume exists (either as path or data URI), provide a view URL
+    if (resume) {
+      // We always point to the view-file endpoint with userId
+      // The view-file endpoint will handle fetching the content from DB
+      safeProfile.resume = `/api/view-file?userId=${safeProfile.id}`;
+      safeProfile.resumeName = safeProfile.resumeName || "Resume";
+    }
 
     return NextResponse.json(safeProfile);
   } catch (error) {
+    console.error("Profile view error:", error);
     return NextResponse.json({ error: "Something went wrong" }, { status: 500 });
   }
 }

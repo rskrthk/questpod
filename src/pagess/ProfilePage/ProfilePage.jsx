@@ -96,7 +96,7 @@ function ProfilePage() {
                           </div>
                         </div>
                         <a 
-                          href={`/api/view-file?path=${encodeURIComponent(user.resume)}`}
+                          href={user.resume}
                           target="_blank" 
                           rel="noopener noreferrer"
                           className="flex items-center gap-2 text-blue-600 hover:text-blue-700 font-medium text-sm px-4 py-2 hover:bg-blue-50 rounded-lg transition-colors"

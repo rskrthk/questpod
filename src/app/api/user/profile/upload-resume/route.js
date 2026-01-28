@@ -3,7 +3,6 @@ import { User } from "@/utils/schema";
 import { verifyTokenWithToken } from "@/utils/jwt";
 import { eq } from "drizzle-orm";
 import { NextResponse } from "next/server";
-import { saveFile } from "@/utils/upload";
 
 export async function POST(req) {
   const user = verifyTokenWithToken(req);
@@ -20,20 +19,26 @@ export async function POST(req) {
       return NextResponse.json({ error: "No file uploaded" }, { status: 400 });
     }
 
-    const filePath = await saveFile(file);
+    // Convert file to Base64 Data URI for DB storage
+    const bytes = await file.arrayBuffer();
+    const buffer = Buffer.from(bytes);
+    const mimeType = file.type || 'application/octet-stream';
+    const base64 = buffer.toString('base64');
+    const dataUri = `data:${mimeType};base64,${base64}`;
+    
     const originalName = file.name;
 
     await db
       .update(User)
       .set({
-        resume: filePath,
+        resume: dataUri,
         resumeName: originalName,
       })
       .where(eq(User.id, user.id));
 
     return NextResponse.json({ 
       message: "Resume uploaded successfully", 
-      resume: filePath,
+      resume: `/api/view-file?userId=${user.id}`,
       resumeName: originalName 
     });
   } catch (error) {
