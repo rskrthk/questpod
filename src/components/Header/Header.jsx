@@ -5,9 +5,11 @@ import { useRouter, usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import toast from "react-hot-toast";
 import FullScreenLoader from "@/lib/FullScreenLoader";
-import { useDispatch } from "react-redux";
-import { logout } from "@/redux/slices/authSlice";
+import { useDispatch, useSelector } from "react-redux";
+import { logout, fetchUserProfile } from "@/redux/slices/authSlice";
 import Image from "next/image";
+import * as Dialog from "@radix-ui/react-dialog";
+import { FileText, ArrowRight } from "lucide-react";
 
 export default function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -17,13 +19,20 @@ export default function Header() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [userRole, setUserRole] = useState(null);
   const [productsDropdownOpen, setProductsDropdownOpen] = useState(false);
+  const [showResumeModal, setShowResumeModal] = useState(false);
 
   const router = useRouter();
   const pathname = usePathname();
+  const dispatch = useDispatch();
+  const { user } = useSelector((state) => state.auth);
 
   useEffect(() => {
     const token = localStorage.getItem("token");
     setIsLoggedIn(!!token);
+
+    if (token) {
+      dispatch(fetchUserProfile());
+    }
 
     const userStr = sessionStorage.getItem("user");
     if (userStr) {
@@ -34,7 +43,7 @@ export default function Header() {
         console.error("Error parsing user from session", e);
       }
     }
-  }, [pathname]);
+  }, [pathname, dispatch]);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -59,11 +68,17 @@ export default function Header() {
   const handleNavigate = (path) => {
     if (pathname === path) return;
 
+    if (path === "/jobs") {
+      // Check for resume
+      if (isLoggedIn && (!user || !user.resume)) {
+        setShowResumeModal(true);
+        return;
+      }
+    }
+
     setIsNavigating(true);
     router.push(path);
   };
-
-  const dispatch = useDispatch();
 
   const handleLogout = async () => {
     setIsNavigating(true);
@@ -399,6 +414,47 @@ export default function Header() {
           </motion.div>
         )}
       </AnimatePresence>
+
+      {/* Resume Requirement Modal */}
+      <Dialog.Root open={showResumeModal} onOpenChange={setShowResumeModal}>
+        <Dialog.Portal>
+          <Dialog.Overlay className="fixed inset-0 bg-black/50 backdrop-blur-sm z-[60] animate-fade-in" />
+          <Dialog.Content className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-md bg-white rounded-2xl p-6 shadow-xl z-[70] animate-scale-in focus:outline-none">
+            <div className="flex flex-col items-center text-center">
+              <div className="w-16 h-16 bg-blue-50 rounded-full flex items-center justify-center mb-4">
+                <FileText className="w-8 h-8 text-blue-600" />
+              </div>
+              
+              <Dialog.Title className="text-xl font-bold text-gray-900 mb-2">
+                Resume Required
+              </Dialog.Title>
+              
+              <Dialog.Description className="text-gray-500 mb-6">
+                To access job listings and apply for positions, you need to upload your resume first. This helps employers understand your qualifications.
+              </Dialog.Description>
+
+              <div className="flex flex-col sm:flex-row gap-3 w-full">
+                <button
+                  onClick={() => setShowResumeModal(false)}
+                  className="flex-1 px-4 py-2.5 text-gray-700 font-medium hover:bg-gray-50 rounded-xl transition-colors"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={() => {
+                    setShowResumeModal(false);
+                    handleNavigate("/profile");
+                  }}
+                  className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 bg-blue-600 text-white font-medium rounded-xl hover:bg-blue-700 transition-colors"
+                >
+                  Go to Profile
+                  <ArrowRight size={18} />
+                </button>
+              </div>
+            </div>
+          </Dialog.Content>
+        </Dialog.Portal>
+      </Dialog.Root>
     </motion.nav>
   );
 }
