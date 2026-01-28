@@ -51,6 +51,8 @@ export const User = pgTable("user", {
   logo: text("logo"),
   adminId: text("adminId"),
   collegeId: text("collegeId"),
+  resume: text("resume"),
+  resumeName: text("resumeName"),
   createdAt: varchar("createdAt"),
   status: varchar("status").default("Active"),
 });

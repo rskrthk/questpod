@@ -7,8 +7,9 @@ import { Briefcase, Clock, IndianRupee, Building2, CheckCircle2 } from "lucide-r
 import moment from "moment";
 
 import { useRouter } from "next/navigation";
+import withAuth from "@/middleware/withAuth";
 
-export default function JobsPage() {
+function JobsPage() {
   const dispatch = useDispatch();
   const { jobs, loading } = useSelector((state) => state.job);
   const router = useRouter();
@@ -46,6 +47,8 @@ export default function JobsPage() {
     </Layout>
   );
 }
+
+export default withAuth(JobsPage, ["user"]);
 
 function JobCard({ job, onClick }) {
   const skillsList = job.skills ? job.skills.split(',').map(s => s.trim()) : [];

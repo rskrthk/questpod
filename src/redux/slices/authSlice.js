@@ -94,6 +94,39 @@ export const fetchAdminProfile = createAsyncThunk(
   }
 );
 
+// FETCH USER PROFILE
+export const fetchUserProfile = createAsyncThunk(
+  "auth/fetchUserProfile",
+  async (_, thunkAPI) => {
+    try {
+      const res = await axios.get("/api/user/profile/view", {
+        headers: getAuthHeader(),
+      });
+      return res.data;
+    } catch (err) {
+      return thunkAPI.rejectWithValue(err?.response?.data?.error || "Failed to fetch profile");
+    }
+  }
+);
+
+// UPLOAD USER RESUME
+export const uploadUserResume = createAsyncThunk(
+  "auth/uploadUserResume",
+  async (formData, thunkAPI) => {
+    try {
+      const res = await axios.post("/api/user/profile/upload-resume", formData, {
+        headers: {
+          ...getAuthHeader(),
+          "Content-Type": "multipart/form-data",
+        },
+      });
+      return res.data;
+    } catch (err) {
+      return thunkAPI.rejectWithValue(err?.response?.data?.error || "Failed to upload resume");
+    }
+  }
+);
+
 // SLICE
 const authSlice = createSlice({
   name: "auth",
@@ -185,6 +218,33 @@ const authSlice = createSlice({
         state.user = action.payload;
       })
       .addCase(fetchAdminProfile.rejected, (state) => {
+        state.loading = false;
+      })
+      
+      // User Profile
+      .addCase(fetchUserProfile.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(fetchUserProfile.fulfilled, (state, action) => {
+        state.loading = false;
+        state.user = action.payload;
+      })
+      .addCase(fetchUserProfile.rejected, (state) => {
+        state.loading = false;
+      })
+
+      // Upload Resume
+      .addCase(uploadUserResume.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(uploadUserResume.fulfilled, (state, action) => {
+        state.loading = false;
+        if (state.user) {
+          state.user.resume = action.payload.resume;
+          state.user.resumeName = action.payload.resumeName;
+        }
+      })
+      .addCase(uploadUserResume.rejected, (state) => {
         state.loading = false;
       });
   },

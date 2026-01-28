@@ -17,8 +17,9 @@ import moment from "moment";
 import parse from "html-react-parser";
 import FullScreenLoader from "@/lib/FullScreenLoader";
 import Link from "next/link";
+import withAuth from "@/middleware/withAuth";
 
-export default function JobDetailsPage({ id }) {
+function JobDetailsPage({ id }) {
   const dispatch = useDispatch();
   const { currentJob, loading, error } = useSelector((state) => state.job);
   const [timeLeft, setTimeLeft] = useState({ days: 0, hours: 0, minutes: 0 });
@@ -210,3 +211,5 @@ export default function JobDetailsPage({ id }) {
     </Layout>
   );
 }
+
+export default withAuth(JobDetailsPage, ["user"]);

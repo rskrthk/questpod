@@ -29,7 +29,7 @@ import { MdAdd } from "react-icons/md";
 import toast from "react-hot-toast";
 import withAuth from "@/middleware/withAuth";
 
-pdfjsLib.GlobalWorkerOptions.workerSrc = `https://unpkg.com/pdfjs-dist@${pdfjsLib.version}/legacy/build/pdf.worker.min.js`;
+pdfjsLib.GlobalWorkerOptions.workerSrc = `https://unpkg.com/pdfjs-dist@${pdfjsLib.version}/legacy/build/pdf.worker.min.mjs`;
 
 const Stepper = ({ step }) => {
   const steps = ["Upload Resume", "Select Topic & Start Interview"];

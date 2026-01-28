@@ -15,6 +15,7 @@ export default function Header() {
   const [lastScrollY, setLastScrollY] = useState(0);
   const [isNavigating, setIsNavigating] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [userRole, setUserRole] = useState(null);
   const [productsDropdownOpen, setProductsDropdownOpen] = useState(false);
 
   const router = useRouter();
@@ -23,6 +24,16 @@ export default function Header() {
   useEffect(() => {
     const token = localStorage.getItem("token");
     setIsLoggedIn(!!token);
+
+    const userStr = sessionStorage.getItem("user");
+    if (userStr) {
+      try {
+        const user = JSON.parse(userStr);
+        setUserRole(user.role);
+      } catch (e) {
+        console.error("Error parsing user from session", e);
+      }
+    }
   }, [pathname]);
 
   useEffect(() => {
@@ -73,7 +84,8 @@ export default function Header() {
   const navItems = [
     { label: "Home", path: "/" },
     // { label: "Pricing", path: "/price" },
-    { label: "Jobs", path: "/jobs" },
+    ...(isLoggedIn && userRole === "user" ? [{ label: "Jobs", path: "/jobs" }] : []),
+    ...(isLoggedIn && userRole === "user" ? [{ label: "Profile", path: "/profile" }] : []),
     { label: "About", path: "/about" },
     { label: "Contact", path: "/contact" },
   ];

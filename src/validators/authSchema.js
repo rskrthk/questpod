@@ -16,7 +16,7 @@ export const signupSchema = z.object({
 
   password: z.string().min(6),
   userName: z.string().optional(),
-  role: z.enum(["admin", "college", "student"]),
+  role: z.enum(["admin", "college", "student", "user"]),
 });
 
 export const forgotPasswordSchema = z.object({
