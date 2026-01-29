@@ -2,8 +2,6 @@ import { db } from "@/utils/db";
 import { Job } from "@/utils/schema";
 import { verifyTokenWithToken } from "@/utils/jwt";
 import { NextResponse } from "next/server";
-import fs from "fs";
-import path from "path";
 
 export async function POST(req) {
   const user = verifyTokenWithToken(req);
@@ -14,10 +12,10 @@ export async function POST(req) {
 
   try {
     const formData = await req.formData();
-    
+
     const getValue = (key) => {
-        const val = formData.get(key);
-        return val === "undefined" || val === "null" ? null : val;
+      const val = formData.get(key);
+      return val === "undefined" || val === "null" ? null : val;
     }
 
     const title = getValue("title");
@@ -32,26 +30,18 @@ export async function POST(req) {
     const skills = getValue("skills");
     const experience = getValue("experience");
     const expireIn = getValue("expireIn");
-    
+
     let companyIcon = null;
     const file = formData.get("companyIcon");
 
     if (file && typeof file !== "string") {
-        const bytes = await file.arrayBuffer();
-        const buffer = Buffer.from(bytes);
-        const filename = `${Date.now()}_${file.name.replace(/\s+/g, "_")}`;
-        const uploadDir = path.join(process.cwd(), "public", "uploads");
-
-        if (!fs.existsSync(uploadDir)) {
-            fs.mkdirSync(uploadDir, { recursive: true });
-        }
-        
-        const filepath = path.join(uploadDir, filename);
-        await fs.promises.writeFile(filepath, buffer);
-        companyIcon = `/uploads/${filename}`;
+      const bytes = await file.arrayBuffer();
+      const buffer = Buffer.from(bytes);
+      const mimeType = file.type || 'application/octet-stream';
+      const base64 = buffer.toString('base64');
+      companyIcon = `data:${mimeType};base64,${base64}`;
     } else if (typeof file === 'string' && file.length > 0) {
-        // Handle case where it might be sent as a string (though unlikely with file input, good for fallback)
-        companyIcon = file;
+      companyIcon = file;
     }
 
     const [job] = await db
