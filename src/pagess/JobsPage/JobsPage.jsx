@@ -1,22 +1,74 @@
 "use client";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchPublicJobs } from "@/redux/slices/jobSlice";
 import Layout from "@/components/Layout/Layout";
-import { Briefcase, Clock, IndianRupee, Building2, CheckCircle2 } from "lucide-react";
+import { Briefcase, Clock, IndianRupee, Building2, CheckCircle2, XCircle, Loader2 } from "lucide-react";
 import moment from "moment";
 
 import { useRouter } from "next/navigation";
 import withAuth from "@/middleware/withAuth";
+import { extractResumeText } from "@/lib/pdfParser";
+import { batchAnalyzeResume } from "@/lib/resumeAnalyzer";
+import toast from "react-hot-toast";
 
 function JobsPage() {
   const dispatch = useDispatch();
   const { jobs, loading } = useSelector((state) => state.job);
+  const { user } = useSelector((state) => state.auth);
   const router = useRouter();
+  const [analyzing, setAnalyzing] = useState(false);
+  const [jobAnalyses, setJobAnalyses] = useState(new Map());
 
   useEffect(() => {
     dispatch(fetchPublicJobs());
   }, [dispatch]);
+
+  // Analyze resume when jobs are loaded and user has resume
+  useEffect(() => {
+    async function analyzeUserResume() {
+      if (!jobs || jobs.length === 0 || !user?.resume || analyzing) {
+        return;
+      }
+
+      setAnalyzing(true);
+      const loadingToast = toast.loading("Analyzing your resume against available jobs...");
+
+      try {
+        // Fetch the actual resume data (data URI) from the API
+        const token = localStorage.getItem("token");
+        const response = await fetch("/api/user/profile/resume-data", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        if (!response.ok) {
+          throw new Error("Failed to fetch resume data");
+        }
+
+        const { resumeData, resumeName } = await response.json();
+
+        // Extract text from resume using the data URI and filename
+        const resumeText = await extractResumeText(resumeData, resumeName);
+
+        // Analyze resume against all jobs
+        const analyses = await batchAnalyzeResume(resumeText, jobs);
+        setJobAnalyses(analyses);
+
+        toast.dismiss(loadingToast);
+        toast.success("Resume analysis complete!");
+      } catch (error) {
+        console.error("Error analyzing resume:", error);
+        toast.dismiss(loadingToast);
+        toast.error("Failed to analyze resume. Showing all jobs.");
+      } finally {
+        setAnalyzing(false);
+      }
+    }
+
+    analyzeUserResume();
+  }, [jobs, user?.resume]);
 
   const handleCardClick = (id) => {
     router.push(`/jobs/${id}`);
@@ -27,18 +79,34 @@ function JobsPage() {
       <div className="min-h-screen bg-gray-50 pt-28 pb-12 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
           <div className="mb-8">
-            <h1 className="text-3xl font-bold text-gray-900">Latest Jobs</h1>
-            <p className="text-gray-500 mt-2">Find your dream job from top companies</p>
+            <div className="flex items-center justify-between">
+              <div>
+                <h1 className="text-3xl font-bold text-gray-900">Latest Jobs</h1>
+                <p className="text-gray-500 mt-2">Find your dream job from top companies</p>
+              </div>
+              {analyzing && (
+                <div className="flex items-center gap-2 text-blue-600">
+                  <Loader2 className="animate-spin" size={20} />
+                  <span className="text-sm font-medium">Analyzing resume...</span>
+                </div>
+              )}
+            </div>
           </div>
-          
+
           {loading ? (
-             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {[1,2,3,4].map(i => <div key={i} className="h-64 bg-white rounded-xl shadow-sm border border-gray-100 animate-pulse"></div>)}
-             </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {[1, 2, 3, 4].map(i => <div key={i} className="h-64 bg-white rounded-xl shadow-sm border border-gray-100 animate-pulse"></div>)}
+            </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {jobs.map((job) => (
-                <JobCard key={job.id} job={job} onClick={() => handleCardClick(job.id)} />
+                <JobCard
+                  key={job.id}
+                  job={job}
+                  onClick={() => handleCardClick(job.id)}
+                  analysis={jobAnalyses.get(job.id)}
+                  isAnalyzing={analyzing}
+                />
               ))}
             </div>
           )}
@@ -50,13 +118,57 @@ function JobsPage() {
 
 export default withAuth(JobsPage, ["user"]);
 
-function JobCard({ job, onClick }) {
+function JobCard({ job, onClick, analysis, isAnalyzing }) {
   const skillsList = job.skills ? job.skills.split(',').map(s => s.trim()) : [];
   const displaySkills = skillsList.slice(0, 3);
   const extraSkills = skillsList.length > 3 ? skillsList.slice(3) : [];
 
+  // Determine eligibility badge
+  const renderEligibilityBadge = () => {
+    if (isAnalyzing || !analysis) {
+      // Show loader or default state while analyzing
+      return (
+        <div className="flex items-center gap-1 px-3 py-1 rounded-full bg-gray-50 text-gray-500 text-sm font-medium whitespace-nowrap">
+          {isAnalyzing ? (
+            <>
+              <Loader2 size={14} className="animate-spin" />
+              Analyzing...
+            </>
+          ) : (
+            <>
+              <CheckCircle2 size={14} />
+              Quick Apply
+            </>
+          )}
+        </div>
+      );
+    }
+
+    if (analysis.eligible) {
+      return (
+        <div
+          className="flex items-center gap-1 px-3 py-1 rounded-full bg-green-50 text-green-600 text-sm font-medium hover:bg-green-100 transition-colors whitespace-nowrap"
+          title={`Match Score: ${analysis.matchScore}% - ${analysis.reason}`}
+        >
+          <CheckCircle2 size={14} />
+          Quick Apply
+        </div>
+      );
+    } else {
+      return (
+        <div
+          className="flex items-center gap-1 px-3 py-1 rounded-full bg-red-50 text-red-600 text-sm font-medium whitespace-nowrap"
+          title={analysis.reason}
+        >
+          <XCircle size={14} />
+          Ineligible
+        </div>
+      );
+    }
+  };
+
   return (
-    <div 
+    <div
       onClick={onClick}
       className="bg-white rounded-xl p-6 shadow-sm border border-gray-100 hover:shadow-md transition-shadow duration-300 cursor-pointer"
     >
@@ -81,10 +193,7 @@ function JobCard({ job, onClick }) {
             </div>
           </div>
         </div>
-        <button className="flex items-center gap-1 px-3 py-1 rounded-full bg-green-50 text-green-600 text-sm font-medium hover:bg-green-100 transition-colors whitespace-nowrap">
-          <CheckCircle2 size={14} />
-          Quick Apply
-        </button>
+        {renderEligibilityBadge()}
       </div>
 
       <div className="grid grid-cols-2 gap-y-3 gap-x-4 mb-6">
@@ -100,10 +209,10 @@ function JobCard({ job, onClick }) {
           <Clock size={16} className="text-gray-400" />
           <span className="text-sm">{job.noticePeriod ? `${job.noticePeriod} Notice Period` : "Immediate Joiner"}</span>
         </div>
-         <div className="flex items-center gap-2">
-            <span className="px-3 py-1 rounded-md bg-blue-50 text-blue-600 text-xs font-semibold">
-                {job.type}
-            </span>
+        <div className="flex items-center gap-2">
+          <span className="px-3 py-1 rounded-md bg-blue-50 text-blue-600 text-xs font-semibold">
+            {job.type}
+          </span>
         </div>
       </div>
 
@@ -113,20 +222,20 @@ function JobCard({ job, onClick }) {
             <span className="text-gray-400">⚙️</span>
             <span>Must have expert skills:</span>
             {displaySkills.map((skill, idx) => (
-                <span key={idx} className="px-2 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-600 border border-gray-200">
-                    {skill}
-                </span>
+              <span key={idx} className="px-2 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-600 border border-gray-200">
+                {skill}
+              </span>
             ))}
           </div>
-           {extraSkills.length > 0 && (
-             <div className="flex flex-wrap gap-2 mt-1 pl-7">
-                 {extraSkills.map((skill, idx) => (
-                    <span key={idx} className="px-3 py-1 rounded-full text-xs font-medium bg-blue-50 text-blue-600">
-                        {skill}
-                    </span>
-                 ))}
-             </div>
-           )}
+          {extraSkills.length > 0 && (
+            <div className="flex flex-wrap gap-2 mt-1 pl-7">
+              {extraSkills.map((skill, idx) => (
+                <span key={idx} className="px-3 py-1 rounded-full text-xs font-medium bg-blue-50 text-blue-600">
+                  {skill}
+                </span>
+              ))}
+            </div>
+          )}
         </div>
       )}
     </div>
