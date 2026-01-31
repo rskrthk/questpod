@@ -94,11 +94,11 @@ function JobsPage() {
           </div>
 
           {loading ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {[1, 2, 3, 4].map(i => <div key={i} className="h-64 bg-white rounded-xl shadow-sm border border-gray-100 animate-pulse"></div>)}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {[1, 2, 3, 4, 5, 6].map(i => <div key={i} className="h-64 bg-white rounded-xl shadow-sm border border-gray-100 animate-pulse"></div>)}
             </div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {jobs.map((job) => (
                 <JobCard
                   key={job.id}
