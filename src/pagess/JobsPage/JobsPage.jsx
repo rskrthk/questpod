@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchPublicJobs } from "@/redux/slices/jobSlice";
 import Layout from "@/components/Layout/Layout";
@@ -19,6 +19,7 @@ function JobsPage() {
   const router = useRouter();
   const [analyzing, setAnalyzing] = useState(false);
   const [jobAnalyses, setJobAnalyses] = useState(new Map());
+  const analyzingRef = useRef(false);
 
   useEffect(() => {
     dispatch(fetchPublicJobs());
@@ -27,12 +28,15 @@ function JobsPage() {
   // Analyze resume when jobs are loaded and user has resume
   useEffect(() => {
     async function analyzeUserResume() {
-      if (!jobs || jobs.length === 0 || !user?.resume || analyzing) {
+      if (!jobs || jobs.length === 0 || !user?.resume || analyzingRef.current) {
         return;
       }
 
+      analyzingRef.current = true;
       setAnalyzing(true);
-      const loadingToast = toast.loading("Analyzing your resume against available jobs...");
+      const loadingToastId = toast.loading("Analyzing your resume against available jobs...", {
+        id: "resume-analysis-toast",
+      });
 
       try {
         // Fetch the actual resume data (data URI) from the API
@@ -56,13 +60,16 @@ function JobsPage() {
         const analyses = await batchAnalyzeResume(resumeText, jobs);
         setJobAnalyses(analyses);
 
-        toast.dismiss(loadingToast);
-        toast.success("Resume analysis complete!");
+        toast.success("Resume analysis complete!", {
+          id: loadingToastId,
+        });
       } catch (error) {
         console.error("Error analyzing resume:", error);
-        toast.dismiss(loadingToast);
-        toast.error("Failed to analyze resume. Showing all jobs.");
+        toast.error("Failed to analyze resume. Showing all jobs.", {
+          id: loadingToastId,
+        });
       } finally {
+        analyzingRef.current = false;
         setAnalyzing(false);
       }
     }
