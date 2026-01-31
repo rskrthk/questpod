@@ -119,10 +119,6 @@ function JobsPage() {
 export default withAuth(JobsPage, ["user"]);
 
 function JobCard({ job, onClick, analysis, isAnalyzing }) {
-  const skillsList = job.skills ? job.skills.split(',').map(s => s.trim()) : [];
-  const displaySkills = skillsList.slice(0, 3);
-  const extraSkills = skillsList.length > 3 ? skillsList.slice(3) : [];
-
   // Determine eligibility badge
   const renderEligibilityBadge = () => {
     if (isAnalyzing || !analysis) {
@@ -216,26 +212,17 @@ function JobCard({ job, onClick, analysis, isAnalyzing }) {
         </div>
       </div>
 
-      {skillsList.length > 0 && (
+      {job.skills && (
         <div className="space-y-3 pt-4 border-t border-gray-50">
           <div className="flex items-center gap-2 text-sm text-gray-500 flex-wrap">
             <span className="text-gray-400">⚙️</span>
             <span>Must have expert skills:</span>
-            {displaySkills.map((skill, idx) => (
+            {job.skills.split(',').map((skill, idx) => (
               <span key={idx} className="px-2 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-600 border border-gray-200">
-                {skill}
+                {skill.trim()}
               </span>
             ))}
           </div>
-          {extraSkills.length > 0 && (
-            <div className="flex flex-wrap gap-2 mt-1 pl-7">
-              {extraSkills.map((skill, idx) => (
-                <span key={idx} className="px-3 py-1 rounded-full text-xs font-medium bg-blue-50 text-blue-600">
-                  {skill}
-                </span>
-              ))}
-            </div>
-          )}
         </div>
       )}
     </div>
