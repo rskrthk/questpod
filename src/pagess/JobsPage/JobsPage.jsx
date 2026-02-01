@@ -28,13 +28,37 @@ function JobsPage() {
   // Analyze resume when jobs are loaded and user has resume
   useEffect(() => {
     async function analyzeUserResume() {
-      if (!jobs || jobs.length === 0 || !user?.resume || analyzingRef.current) {
+      if (!jobs || jobs.length === 0 || !user?.resume) {
         return;
       }
 
+      // Check cache first to avoid unnecessary re-analysis
+      const cacheKey = `resume_analysis_v1_${user.resume}`;
+      let cachedAnalyses = new Map();
+      try {
+        const cached = sessionStorage.getItem(cacheKey);
+        if (cached) {
+          const parsed = JSON.parse(cached);
+          cachedAnalyses = new Map(Object.entries(parsed));
+        }
+      } catch (e) {
+        console.error("Error reading analysis cache:", e);
+      }
+
+      // Filter jobs that need analysis
+      const jobsToAnalyze = jobs.filter(job => !cachedAnalyses.has(job.id));
+
+      // If we have cached results for all jobs, use them and skip analysis
+      if (jobsToAnalyze.length === 0) {
+        setJobAnalyses(cachedAnalyses);
+        return;
+      }
+
+      if (analyzingRef.current) return;
+
       analyzingRef.current = true;
       setAnalyzing(true);
-      const loadingToastId = toast.loading("Analyzing your resume against available jobs...", {
+      const loadingToastId = toast.loading("Analyzing your resume against new jobs...", {
         id: "resume-analysis-toast",
       });
 
@@ -52,13 +76,24 @@ function JobsPage() {
         }
 
         const { resumeData, resumeName } = await response.json();
-
+        
         // Extract text from resume using the data URI and filename
         const resumeText = await extractResumeText(resumeData, resumeName);
+        
+        // Analyze resume against only new jobs
+        console.log(`Analyzing resume against ${jobsToAnalyze.length} jobs...`);
+        const newAnalyses = await batchAnalyzeResume(resumeText, jobsToAnalyze);
+        
+        // Merge with cached analyses
+        const finalAnalyses = new Map([...cachedAnalyses, ...newAnalyses]);
+        setJobAnalyses(finalAnalyses);
 
-        // Analyze resume against all jobs
-        const analyses = await batchAnalyzeResume(resumeText, jobs);
-        setJobAnalyses(analyses);
+        // Update cache
+        try {
+          sessionStorage.setItem(cacheKey, JSON.stringify(Object.fromEntries(finalAnalyses)));
+        } catch (e) {
+          console.error("Failed to update analysis cache:", e);
+        }
 
         toast.success("Resume analysis complete!", {
           id: loadingToastId,
@@ -68,6 +103,10 @@ function JobsPage() {
         toast.error("Failed to analyze resume. Showing all jobs.", {
           id: loadingToastId,
         });
+        // Even on error, show what we have in cache
+        if (cachedAnalyses.size > 0) {
+           setJobAnalyses(cachedAnalyses);
+        }
       } finally {
         analyzingRef.current = false;
         setAnalyzing(false);

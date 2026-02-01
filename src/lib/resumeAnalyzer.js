@@ -9,14 +9,23 @@ const genAI = new GoogleGenerativeAI(process.env.NEXT_PUBLIC_GEMINI_API_KEY);
  * @returns {Promise<{eligible: boolean, reason: string, matchScore: number}>}
  */
 export async function analyzeResumeForJob(resumeText, job) {
+    console.log(`[ResumeAnalyzer] Starting analysis for job: ${job.id} - ${job.title}`);
     try {
-        // Use gemini-2.0-flash-exp (matching the working model in the codebase)
-        const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
+        // Use gemini-2.5-flash with temperature 0 for deterministic results
+        const model = genAI.getGenerativeModel({ 
+            model: "gemini-2.5-flash",
+            generationConfig: {
+                temperature: 0.0,
+                topP: 1,
+                topK: 32, // Lower topK for more focused results
+            }
+        });
         const today = new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
         const currentYear = new Date().getFullYear();
 
         const prompt = `
 You are an expert resume analyzer. Analyze the following resume against the job requirements and determine if the candidate is eligible.
+BE DETERMINISTIC: Identical inputs must produce identical outputs.
 
 **Today's Date:** ${today}
 
@@ -55,15 +64,19 @@ Provide ONLY the JSON response, no additional text.
         const result = await model.generateContent(prompt);
         const response = await result.response;
         const text = response.text();
+        
+        console.log(`[ResumeAnalyzer] Raw response for job ${job.id}:`, text.substring(0, 100) + "...");
 
         // Extract JSON from the response
         const jsonMatch = text.match(/\{[\s\S]*\}/);
         if (!jsonMatch) {
-            console.error("AI response doesn't contain valid JSON:", text);
+            console.error("[ResumeAnalyzer] AI response doesn't contain valid JSON:", text);
             throw new Error("Invalid response format from AI");
         }
 
         const analysis = JSON.parse(jsonMatch[0]);
+        
+        console.log(`[ResumeAnalyzer] Analysis result for job ${job.id}: Eligible=${analysis.eligible}, Score=${analysis.matchScore}`);
 
         return {
             eligible: analysis.eligible || false,
@@ -73,7 +86,7 @@ Provide ONLY the JSON response, no additional text.
             missingSkills: analysis.missingSkills || []
         };
     } catch (error) {
-        console.error("Error analyzing resume for job:", job.title, error);
+        console.error("[ResumeAnalyzer] Error analyzing resume for job:", job.title, error);
         console.error("Error details:", error.message);
 
         // Return a neutral response on error
