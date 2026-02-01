@@ -58,9 +58,7 @@ function JobsPage() {
 
       analyzingRef.current = true;
       setAnalyzing(true);
-      const loadingToastId = toast.loading("Analyzing your resume against new jobs...", {
-        id: "resume-analysis-toast",
-      });
+      // Removed loading toast as per user request
 
       try {
         // Fetch the actual resume data (data URI) from the API
@@ -95,14 +93,10 @@ function JobsPage() {
           console.error("Failed to update analysis cache:", e);
         }
 
-        toast.success("Resume analysis complete!", {
-          id: loadingToastId,
-        });
+        // Removed success toast
       } catch (error) {
         console.error("Error analyzing resume:", error);
-        toast.error("Failed to analyze resume. Showing all jobs.", {
-          id: loadingToastId,
-        });
+        toast.error("Failed to analyze resume. Showing all jobs.");
         // Even on error, show what we have in cache
         if (cachedAnalyses.size > 0) {
            setJobAnalyses(cachedAnalyses);
@@ -122,8 +116,25 @@ function JobsPage() {
 
   return (
     <Layout>
-      <div className="min-h-screen bg-gray-50 pt-28 pb-12 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-7xl mx-auto">
+      <div className="min-h-screen bg-gray-50 pt-28 pb-12 px-4 sm:px-6 lg:px-8 relative">
+        {analyzing && (
+          <div className="fixed inset-0 bg-black/20 z-50 flex items-center justify-center backdrop-blur-sm cursor-wait">
+            <div className="bg-white p-6 rounded-2xl shadow-xl flex flex-col items-center gap-4 animate-in fade-in zoom-in duration-300">
+              <div className="relative">
+                <div className="absolute inset-0 bg-blue-100 rounded-full animate-ping opacity-75"></div>
+                <div className="relative bg-blue-50 p-4 rounded-full">
+                  <Loader2 className="animate-spin text-blue-600" size={32} />
+                </div>
+              </div>
+              <div className="text-center">
+                <h3 className="text-lg font-bold text-gray-900">Analyzing Your Resume</h3>
+                <p className="text-gray-500 text-sm mt-1">Finding the best matches for you...</p>
+              </div>
+            </div>
+          </div>
+        )}
+        
+        <div className={`max-w-7xl mx-auto transition-all duration-300 ${analyzing ? 'pointer-events-none blur-[2px]' : ''}`}>
           <div className="mb-8">
             <div className="flex items-center justify-between">
               <div>
@@ -149,7 +160,7 @@ function JobsPage() {
                 <JobCard
                   key={job.id}
                   job={job}
-                  onClick={() => handleCardClick(job.id)}
+                  onClick={() => !analyzing && handleCardClick(job.id)}
                   analysis={jobAnalyses.get(job.id)}
                   isAnalyzing={analyzing}
                 />

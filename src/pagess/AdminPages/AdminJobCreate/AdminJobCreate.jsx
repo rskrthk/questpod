@@ -14,6 +14,8 @@ import {
   Code,
   Calendar,
   Image as ImageIcon,
+  HelpCircle,
+  Trash2,
 } from "lucide-react";
 import Skeleton from "@/components/FormComponents/Skeleton";
 import withAuth from "@/middleware/withAuth";
@@ -331,6 +333,105 @@ function AdminJobCreate() {
                     <p className={errorStyle}>{formik.errors.skills}</p>
                   )}
                 </div>
+              </div>
+
+              <div className="border-b border-gray-200 pb-8 mb-8">
+                <div className="flex justify-between items-center mb-4">
+                  <h3 className="text-xl font-semibold text-gray-800 flex items-center gap-2">
+                    <HelpCircle size={22} className="text-purple-500" /> Custom Questions
+                  </h3>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const currentQuestions = formik.values.customQuestions || [];
+                      formik.setFieldValue("customQuestions", [
+                        ...currentQuestions,
+                        { question: "", mandatory: false },
+                      ]);
+                    }}
+                    className="flex items-center gap-1 text-sm font-medium text-purple-600 hover:text-purple-700 transition-colors"
+                  >
+                    <PlusCircle size={16} /> Add Question
+                  </button>
+                </div>
+
+                {formik.values.customQuestions?.length > 0 ? (
+                  <div className="space-y-4">
+                    {formik.values.customQuestions.map((q, index) => (
+                      <div key={index} className="flex gap-4 items-start bg-gray-50 p-4 rounded-lg border border-gray-100">
+                        <div className="flex-1">
+                          <label className="block text-sm font-medium text-gray-700 mb-1">
+                            Question {index + 1}
+                          </label>
+                          <input
+                            type="text"
+                            value={q.question}
+                            onChange={(e) =>
+                              formik.setFieldValue(
+                                `customQuestions.${index}.question`,
+                                e.target.value
+                              )
+                            }
+                            className={inputStyle}
+                            placeholder="Enter your question here..."
+                          />
+                          {formik.errors.customQuestions?.[index]?.question && (
+                            <p className={errorStyle}>
+                              {formik.errors.customQuestions[index].question}
+                            </p>
+                          )}
+                        </div>
+                        <div className="pt-8">
+                           <label className="flex items-center gap-2 cursor-pointer select-none">
+                            <input
+                              type="checkbox"
+                              checked={q.mandatory}
+                              onChange={(e) =>
+                                formik.setFieldValue(
+                                  `customQuestions.${index}.mandatory`,
+                                  e.target.checked
+                                )
+                              }
+                              className="w-4 h-4 text-purple-600 rounded focus:ring-purple-500 border-gray-300"
+                            />
+                            <span className="text-sm text-gray-700">Mandatory</span>
+                          </label>
+                        </div>
+                        <div className="pt-7">
+                          <button
+                            type="button"
+                            onClick={() => {
+                              const newQuestions = [...formik.values.customQuestions];
+                              newQuestions.splice(index, 1);
+                              formik.setFieldValue("customQuestions", newQuestions);
+                            }}
+                            className="p-2 text-red-500 hover:bg-red-50 rounded-lg transition-colors"
+                            title="Remove question"
+                          >
+                            <Trash2 size={18} />
+                          </button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="text-center py-8 bg-gray-50 rounded-lg border border-dashed border-gray-300 text-gray-500">
+                    <p>No custom questions added yet.</p>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const currentQuestions = formik.values.customQuestions || [];
+                        formik.setFieldValue("customQuestions", [
+                          ...currentQuestions,
+                          { question: "", mandatory: false },
+                        ]);
+                      }}
+                      className="mt-2 text-purple-600 font-medium hover:underline"
+                    >
+                      Add your first question
+                    </button>
+                  </div>
+                )}
               </div>
 
               <div className="flex justify-end pt-4">

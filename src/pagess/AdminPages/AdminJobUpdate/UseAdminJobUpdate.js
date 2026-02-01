@@ -62,6 +62,8 @@ export function useAdminJobUpdate() {
         Object.keys(values).forEach(key => {
             if (key === 'expireIn') {
                  if (values[key]) formData.append(key, values[key]);
+            } else if (key === 'customQuestions') {
+                 formData.append(key, JSON.stringify(values[key]));
             } else if (values[key] !== null && values[key] !== undefined) {
                  formData.append(key, values[key]);
             }
@@ -103,7 +105,15 @@ export function useAdminJobUpdate() {
             noticePeriod: data.noticePeriod || "",
             skills: data.skills || "",
             experience: data.experience || "",
-            expireIn: data.expireIn ? data.expireIn.split('T')[0] : "",
+            expireIn: data.expireIn ? new Date(data.expireIn).toISOString().split('T')[0] : "",
+            customQuestions: (() => {
+              try {
+                return data.customQuestions ? JSON.parse(data.customQuestions) : [];
+              } catch (e) {
+                console.error("Failed to parse customQuestions", e);
+                return [];
+              }
+            })(),
           });
         }
       } catch (err) {

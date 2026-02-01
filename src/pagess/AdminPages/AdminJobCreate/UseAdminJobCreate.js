@@ -25,6 +25,12 @@ export function useAdminJobCreate() {
     skills: Yup.string(),
     experience: Yup.string(),
     expireIn: Yup.date().nullable(),
+    customQuestions: Yup.array().of(
+      Yup.object().shape({
+        question: Yup.string().required("Question is required"),
+        mandatory: Yup.boolean(),
+      })
+    ),
   });
 
   const formik = useFormik({
@@ -42,6 +48,7 @@ export function useAdminJobCreate() {
       skills: "",
       experience: "",
       expireIn: "",
+      customQuestions: [],
     },
     validationSchema,
     onSubmit: async (values) => {
@@ -51,6 +58,8 @@ export function useAdminJobCreate() {
         Object.keys(values).forEach(key => {
             if (key === 'expireIn') {
                  if (values[key]) formData.append(key, values[key]);
+            } else if (key === 'customQuestions') {
+                 formData.append(key, JSON.stringify(values[key]));
             } else if (values[key] !== null && values[key] !== undefined) {
                 formData.append(key, values[key]);
             }
