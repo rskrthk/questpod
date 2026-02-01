@@ -12,9 +12,13 @@ export async function analyzeResumeForJob(resumeText, job) {
     try {
         // Use gemini-2.0-flash-exp (matching the working model in the codebase)
         const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
+        const today = new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+        const currentYear = new Date().getFullYear();
 
         const prompt = `
 You are an expert resume analyzer. Analyze the following resume against the job requirements and determine if the candidate is eligible.
+
+**Today's Date:** ${today}
 
 **Job Details:**
 - Title: ${job.title}
@@ -30,7 +34,9 @@ ${resumeText.substring(0, 3000)}
 
 **Analysis Instructions:**
 1. Check if the candidate has the required skills mentioned in the job (at least 60% match)
-2. Check if the candidate's experience level matches or exceeds the required experience
+2. Check if the candidate's experience level matches or exceeds the required experience. 
+   - IMPORTANT: For any "Present", "Current", or "Till Date" roles, calculate the duration from the start date to today's date (${today}).
+   - For example, March 2022 to Present should be calculated as 3+ years as of ${currentYear}.
 3. Consider if the resume demonstrates relevant expertise and background
 4. Provide a match score from 0-100
 
