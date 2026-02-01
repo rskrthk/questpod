@@ -42,18 +42,31 @@ BE DETERMINISTIC: Identical inputs must produce identical outputs.
 ${resumeText.substring(0, 3000)}
 
 **Analysis Instructions:**
-1. Check if the candidate has the required skills mentioned in the job (at least 60% match)
+1. Check if the candidate has the required skills mentioned in the job (at least 60% match).
 2. Check if the candidate's experience level matches or exceeds the required experience. 
    - IMPORTANT: For any "Present", "Current", or "Till Date" roles, calculate the duration from the start date to today's date (${today}).
    - For example, March 2022 to Present should be calculated as 3+ years as of ${currentYear}.
-3. Consider if the resume demonstrates relevant expertise and background
-4. Provide a match score from 0-100
+3. Analyze the candidate's notice period for information, but DO NOT use it to determine the 'eligible' status.
+4. Provide a detailed breakdown of skills, experience, and notice period.
 
 **Response Format (JSON only):**
 {
   "eligible": true/false,
   "reason": "Brief explanation (max 50 words)",
   "matchScore": number between 0-100,
+  "skillsAnalysis": [
+    { "skill": "Skill Name from Job", "isMatch": true/false }
+  ],
+  "experienceAnalysis": {
+    "isMatch": true/false,
+    "candidateExperience": "e.g. 4 years",
+    "requiredExperience": "e.g. 3 years"
+  },
+  "noticePeriodAnalysis": {
+    "isMatch": true/false,
+    "candidateNoticePeriod": "e.g. 30 days or Immediate",
+    "requiredNoticePeriod": "e.g. 60 days"
+  },
   "keyMatches": ["list", "of", "matching", "skills"],
   "missingSkills": ["list", "of", "missing", "skills"]
 }
@@ -83,7 +96,10 @@ Provide ONLY the JSON response, no additional text.
             reason: analysis.reason || "Unable to determine eligibility",
             matchScore: analysis.matchScore || 0,
             keyMatches: analysis.keyMatches || [],
-            missingSkills: analysis.missingSkills || []
+            missingSkills: analysis.missingSkills || [],
+            skillsAnalysis: analysis.skillsAnalysis || [],
+            experienceAnalysis: analysis.experienceAnalysis || { isMatch: false, candidateExperience: "Unknown", requiredExperience: job.experience || "Not specified" },
+            noticePeriodAnalysis: analysis.noticePeriodAnalysis || { isMatch: false, candidateNoticePeriod: "Unknown", requiredNoticePeriod: job.noticePeriod || "Not specified" }
         };
     } catch (error) {
         console.error("[ResumeAnalyzer] Error analyzing resume for job:", job.title, error);

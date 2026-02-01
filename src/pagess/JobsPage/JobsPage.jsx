@@ -33,7 +33,7 @@ function JobsPage() {
       }
 
       // Check cache first to avoid unnecessary re-analysis
-      const cacheKey = `resume_analysis_v1_${user.resume}`;
+      const cacheKey = `resume_analysis_v3_${user.resume}`;
       let cachedAnalyses = new Map();
       try {
         const cached = sessionStorage.getItem(cacheKey);
