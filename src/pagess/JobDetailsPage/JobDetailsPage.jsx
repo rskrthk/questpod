@@ -176,7 +176,7 @@ function JobDetailsPage({ id }) {
 
             <div className="mt-8 flex flex-wrap items-center justify-between gap-4 pt-8 border-t border-gray-100">
               <div className="flex flex-wrap items-center gap-4">
-                {currentJob.applicationLink && (
+                {currentJob.applicationLink && analysis?.eligible && (
                   <a
                     href={currentJob.applicationLink}
                     target="_blank"
