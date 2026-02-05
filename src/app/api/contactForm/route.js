@@ -1,8 +1,6 @@
 import { db } from "@/utils/db";
 import { ContactForm } from "@/utils/schema";
 import { NextResponse } from "next/server";
-import fs from "fs";
-import path from "path";
 import moment from "moment";
 import axios from "axios";
 
@@ -23,17 +21,9 @@ export async function POST(req) {
     if (file && file.name) {
       const bytes = await file.arrayBuffer();
       const buffer = Buffer.from(bytes);
-
-      const filename = `${Date.now()}_${file.name.replace(/[\s()]+/g, "_")}`;
-      const uploadDir = path.join(process.cwd(), "public", "uploads", "contactForm");
-
-      if (!fs.existsSync(uploadDir)) {
-        fs.mkdirSync(uploadDir, { recursive: true });
-      }
-
-      const filepath = path.join(uploadDir, filename);
-      await fs.promises.writeFile(filepath, buffer);
-      attachmentUrl = `/uploads/contactForm/${filename}`;
+      const mimeType = file.type || 'application/octet-stream';
+      const base64 = buffer.toString('base64');
+      attachmentUrl = `data:${mimeType};base64,${base64}`;
     }
 
     const submissionData = {
@@ -56,7 +46,11 @@ export async function POST(req) {
     const data = {
       submissionData: {
         ...submissionData,
-        attachmentUrl: attachmentUrl ? `${baseUrl}${attachmentUrl}` : null,
+        // If attachmentUrl is a Data URI, pass it directly. If it was a path (legacy), prefix it.
+        attachmentUrl: attachmentUrl && attachmentUrl.startsWith("data:") 
+          ? attachmentUrl 
+          : (attachmentUrl ? `${baseUrl}${attachmentUrl}` : null),
+        attachmentName: file && file.name ? file.name : "attachment"
       },
       type: "Contact Form",
       subject: subjectName,

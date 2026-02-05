@@ -3,8 +3,6 @@ import { User } from "@/utils/schema";
 import { NextResponse } from "next/server";
 import { verifyTokenWithToken } from "@/utils/jwt";
 import bcrypt from "bcryptjs";
-import path from "path";
-import fs from "fs/promises";
 import { v4 as uuidv4 } from "uuid";
 import moment from "moment";
 
@@ -44,15 +42,9 @@ export async function POST(req) {
       const file = formData.get("file");
       if (file && typeof file !== "string") {
         const buffer = Buffer.from(await file.arrayBuffer());
-        const fileName = `${uuidv4()}_${file.name}`;
-        const uploadPath = path.join(
-          process.cwd(),
-          "public",
-          "uploads",
-          fileName
-        );
-        await fs.writeFile(uploadPath, buffer);
-        logoUrl = `/uploads/${fileName}`;
+        const mimeType = file.type || 'application/octet-stream';
+        const base64 = buffer.toString('base64');
+        logoUrl = `data:${mimeType};base64,${base64}`;
       }
     } else if (contentType.includes("application/json")) {
       // ✅ Handle plain JSON body

@@ -22,6 +22,18 @@ import parse from "html-react-parser";
 import FullScreenLoader from "@/lib/FullScreenLoader";
 import Link from "next/link";
 import withAuth from "@/middleware/withAuth";
+import ApplyJobModal from "@/components/ApplyJobModal/ApplyJobModal";
+import Timeline from "@/components/Timeline/Timeline";
+import axios from "axios";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+  DialogDescription
+} from "@/lib/dialog";
+import toast from "react-hot-toast";
 
 function JobDetailsPage({ id }) {
   const dispatch = useDispatch();
@@ -29,6 +41,13 @@ function JobDetailsPage({ id }) {
   const { user } = useSelector((state) => state.auth);
   const [timeLeft, setTimeLeft] = useState({ days: 0, hours: 0, minutes: 0 });
   const [analysis, setAnalysis] = useState(null);
+  
+  // Apply flow state
+  const [isApplyModalOpen, setIsApplyModalOpen] = useState(false);
+  const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
+  const [parsedQuestions, setParsedQuestions] = useState([]);
+  const [answers, setAnswers] = useState([]);
+  const [applicationStatus, setApplicationStatus] = useState(null);
 
   useEffect(() => {
     if (id) {
@@ -38,6 +57,45 @@ function JobDetailsPage({ id }) {
       dispatch(clearCurrentJob());
     };
   }, [dispatch, id]);
+
+  // Check application status
+  useEffect(() => {
+    const fetchStatus = async () => {
+      if (user && id) {
+        try {
+          const token = localStorage.getItem("token") || sessionStorage.getItem("token");
+          const response = await axios.get(`/api/application/status?jobId=${id}`, {
+            headers: { Authorization: `Bearer ${token}` }
+          });
+          if (response.data.applied) {
+            setApplicationStatus(response.data.status);
+          } else {
+            setApplicationStatus(null);
+          }
+        } catch (error) {
+          console.error("Error fetching application status:", error);
+        }
+      }
+    };
+    fetchStatus();
+  }, [user, id]);
+
+  // Parse custom questions
+  useEffect(() => {
+    if (currentJob?.customQuestions) {
+      try {
+        const parsed = typeof currentJob.customQuestions === 'string' 
+          ? JSON.parse(currentJob.customQuestions) 
+          : currentJob.customQuestions;
+        setParsedQuestions(Array.isArray(parsed) ? parsed : []);
+      } catch (e) {
+        console.error("Failed to parse custom questions", e);
+        setParsedQuestions([]);
+      }
+    } else {
+      setParsedQuestions([]);
+    }
+  }, [currentJob]);
 
   // Load analysis from cache
   useEffect(() => {
@@ -79,6 +137,41 @@ function JobDetailsPage({ id }) {
       return () => clearInterval(timer);
     }
   }, [currentJob]);
+
+  const handleApplyClick = () => {
+    if (parsedQuestions.length > 0) {
+      setIsApplyModalOpen(true);
+    } else {
+      setIsConfirmModalOpen(true);
+    }
+  };
+
+  const handleQuestionsSubmit = (submittedAnswers) => {
+    setAnswers(submittedAnswers);
+    setIsApplyModalOpen(false);
+    setIsConfirmModalOpen(true);
+  };
+
+  const handleFinalConfirm = async () => {
+    try {
+      const token = localStorage.getItem("token") || sessionStorage.getItem("token");
+      await axios.post("/api/application/apply", {
+        jobId: id,
+        answers: answers
+      }, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+
+      setIsConfirmModalOpen(false);
+      toast.success("Application submitted successfully!");
+      setApplicationStatus("Resume Sent to Company");
+      
+    } catch (error) {
+      console.error("Application submission error:", error);
+      toast.error(error.response?.data?.error || "Failed to submit application");
+      setIsConfirmModalOpen(false);
+    }
+  };
 
   if (loading) return <FullScreenLoader />;
   if (error) return (
@@ -176,15 +269,20 @@ function JobDetailsPage({ id }) {
 
             <div className="mt-8 flex flex-wrap items-center justify-between gap-4 pt-8 border-t border-gray-100">
               <div className="flex flex-wrap items-center gap-4">
-                {currentJob.applicationLink && analysis?.eligible && (
-                  <a
-                    href={currentJob.applicationLink}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="px-8 py-2.5 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition-colors"
-                  >
-                    Apply Now
-                  </a>
+                {applicationStatus ? (
+                   <div className="px-6 py-2.5 bg-green-50 text-green-700 font-semibold rounded-lg border border-green-200 flex items-center gap-2">
+                     <CheckCircle2 size={20} />
+                     Applied
+                   </div>
+                ) : (
+                  analysis?.eligible && (
+                    <button
+                      onClick={handleApplyClick}
+                      className="px-8 py-2.5 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition-colors"
+                    >
+                      Apply Now
+                    </button>
+                  )
                 )}
                 <button className="px-6 py-2.5 border border-blue-200 text-blue-600 font-medium rounded-lg hover:bg-blue-50 transition-colors flex items-center gap-2">
                   <X size={18} />
@@ -201,6 +299,13 @@ function JobDetailsPage({ id }) {
               </button>
             </div>
           </div>
+
+          {/* Application Timeline */}
+          {applicationStatus && (
+            <div className="mb-6">
+               <Timeline currentStatus={applicationStatus} />
+            </div>
+          )}
 
           {/* Eligibility Analysis */}
           {analysis && (
@@ -350,6 +455,38 @@ function JobDetailsPage({ id }) {
           </div>
         </div>
       </div>
+
+      <ApplyJobModal
+        isOpen={isApplyModalOpen}
+        onClose={() => setIsApplyModalOpen(false)}
+        questions={parsedQuestions}
+        onConfirm={handleQuestionsSubmit}
+      />
+
+      <Dialog open={isConfirmModalOpen} onOpenChange={setIsConfirmModalOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Confirm Application</DialogTitle>
+            <DialogDescription className="mt-2 text-gray-600">
+              Are you sure you want to apply for this position?
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="mt-6 flex gap-2 justify-end">
+            <button
+              onClick={() => setIsConfirmModalOpen(false)}
+              className="px-4 py-2 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
+            >
+              Cancel
+            </button>
+            <button
+              onClick={handleFinalConfirm}
+              className="px-6 py-2 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors"
+            >
+              Confirm
+            </button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </Layout>
   );
 }

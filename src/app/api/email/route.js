@@ -33,25 +33,42 @@ export async function POST(req) {
     // ✅ Prepare attachment if exists
     let attachments = [];
     if (submissionData.attachmentUrl) {
-      const urlPath = new URL(submissionData.attachmentUrl);
-      const relativePath = urlPath.pathname.replace(/^\/+/, ''); // remove leading slash
-      const filePath = path.join(process.cwd(), 'public', relativePath);
-
-      if (fs.existsSync(filePath)) {
-        try {
-          const fileContent = fs.readFileSync(filePath);
-          attachments.push({
-            filename: path.basename(filePath),
-            content: fileContent,
-          });
-        } catch (fileReadError) {
-          console.error("Error reading attachment file:", fileReadError);
-        }
+      if (submissionData.attachmentUrl.startsWith("data:")) {
+        // Handle Data URI
+        attachments.push({
+          path: submissionData.attachmentUrl,
+          filename: submissionData.attachmentName || "attachment.bin"
+        });
       } else {
-        console.warn("Attachment file not found:", filePath);
+        // Handle Legacy File Path (Only if it exists locally, which might fail on Vercel)
+        // Or if it is a remote URL, nodemailer can fetch it if we use 'path' with a URL?
+        // Actually, nodemailer 'path' supports URLs too.
+        // But the previous code was reading from FS using the URL pathname.
+        try {
+          const urlPath = new URL(submissionData.attachmentUrl);
+          const relativePath = urlPath.pathname.replace(/^\/+/, ''); // remove leading slash
+          const filePath = path.join(process.cwd(), 'public', relativePath);
+
+          if (fs.existsSync(filePath)) {
+            try {
+              const fileContent = fs.readFileSync(filePath);
+              attachments.push({
+                filename: path.basename(filePath),
+                content: fileContent,
+              });
+            } catch (fileReadError) {
+              console.error("Error reading attachment file:", fileReadError);
+            }
+          } else {
+            console.warn("Attachment file not found:", filePath);
+          }
+        } catch (e) {
+          console.warn("Error parsing attachment URL:", e);
+        }
       }
     }
     delete submissionData.attachmentUrl;
+    delete submissionData.attachmentName;
 
 
     // ✅ Format HTML table dynamically

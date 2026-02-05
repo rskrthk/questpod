@@ -151,3 +151,13 @@ export const Job = pgTable("job", {
   createdAt: timestamp("createdAt").defaultNow(),
   updatedAt: timestamp("updatedAt").defaultNow(),
 });
+
+export const Application = pgTable("application", {
+  id: serial("id").primaryKey(),
+  jobId: integer("jobId").references(() => Job.id).notNull(),
+  userId: integer("userId").references(() => User.id).notNull(),
+  status: varchar("status").default("Resume Sent to Company"),
+  answers: text("answers"), // JSON string for custom answers
+  createdAt: timestamp("createdAt").defaultNow(),
+  updatedAt: timestamp("updatedAt").defaultNow(),
+});

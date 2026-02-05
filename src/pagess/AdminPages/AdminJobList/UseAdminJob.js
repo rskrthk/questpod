@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchJobs, deleteJob } from "@/redux/slices/jobSlice";
 import { useRouter } from "next/navigation";
-import { Edit, Trash2 } from "lucide-react";
+import { Edit, Trash2, Users } from "lucide-react";
 import toast from "react-hot-toast";
 
 export function UseAdminJob() {
@@ -67,6 +67,13 @@ export function UseAdminJob() {
       accessorKey: "actions",
       cell: (info) => (
         <div className="flex gap-2">
+          <button
+            onClick={() => router.push(`/admin-job-applications/${info.row.original.id}`)}
+            className="p-1 text-purple-600 hover:text-purple-800 transition-colors"
+            title="View Applications"
+          >
+            <Users size={18} />
+          </button>
           <button
             onClick={() => handleEdit(info.row.original)}
             className="p-1 text-blue-600 hover:text-blue-800 transition-colors"
