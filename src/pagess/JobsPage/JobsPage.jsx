@@ -5,6 +5,7 @@ import { fetchPublicJobs } from "@/redux/slices/jobSlice";
 import Layout from "@/components/Layout/Layout";
 import { Briefcase, Clock, IndianRupee, Building2, CheckCircle2, XCircle, Loader2 } from "lucide-react";
 import moment from "moment";
+import axios from "axios";
 
 import { useRouter } from "next/navigation";
 import withAuth from "@/middleware/withAuth";
@@ -19,10 +20,31 @@ function JobsPage() {
   const router = useRouter();
   const [analyzing, setAnalyzing] = useState(false);
   const [jobAnalyses, setJobAnalyses] = useState(new Map());
+  const [filter, setFilter] = useState('all');
+  const [appliedJobIds, setAppliedJobIds] = useState(new Set());
   const analyzingRef = useRef(false);
 
   useEffect(() => {
     dispatch(fetchPublicJobs());
+    
+    // Fetch applied jobs
+    const fetchAppliedJobs = async () => {
+      try {
+        const token = localStorage.getItem("token");
+        if (!token) return;
+        
+        const response = await axios.get("/api/user/applications/list", {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        
+        const ids = new Set(response.data.applications.map(app => app.jobId));
+        setAppliedJobIds(ids);
+      } catch (error) {
+        console.error("Error fetching applied jobs:", error);
+      }
+    };
+    
+    fetchAppliedJobs();
   }, [dispatch]);
 
   // Analyze resume when jobs are loaded and user has resume
@@ -110,6 +132,13 @@ function JobsPage() {
     analyzeUserResume();
   }, [jobs, user?.resume]);
 
+  const filteredJobs = jobs?.filter(job => {
+    if (filter === 'applied') {
+      return appliedJobIds.has(job.id);
+    }
+    return true;
+  });
+
   const handleCardClick = (id) => {
     router.push(`/jobs/${id}`);
   }
@@ -136,7 +165,7 @@ function JobsPage() {
         
         <div className={`max-w-7xl mx-auto transition-all duration-300 ${analyzing ? 'pointer-events-none blur-[2px]' : ''}`}>
           <div className="mb-8">
-            <div className="flex items-center justify-between">
+            <div className="flex items-center justify-between mb-6">
               <div>
                 <h1 className="text-3xl font-bold text-gray-900">Latest Jobs</h1>
                 <p className="text-gray-500 mt-2">Find your dream job from top companies</p>
@@ -148,6 +177,29 @@ function JobsPage() {
                 </div>
               )}
             </div>
+
+            <div className="flex gap-3">
+              <button
+                onClick={() => setFilter('all')}
+                className={`px-4 py-2 rounded-lg font-medium transition-all duration-200 ${
+                  filter === 'all' 
+                    ? 'bg-blue-600 text-white shadow-md shadow-blue-200' 
+                    : 'bg-white text-gray-600 hover:bg-gray-50 border border-gray-200 hover:border-gray-300'
+                }`}
+              >
+                All Jobs
+              </button>
+              <button
+                onClick={() => setFilter('applied')}
+                className={`px-4 py-2 rounded-lg font-medium transition-all duration-200 ${
+                  filter === 'applied' 
+                    ? 'bg-blue-600 text-white shadow-md shadow-blue-200' 
+                    : 'bg-white text-gray-600 hover:bg-gray-50 border border-gray-200 hover:border-gray-300'
+                }`}
+              >
+                Applied ({appliedJobIds.size})
+              </button>
+            </div>
           </div>
 
           {loading ? (
@@ -156,15 +208,22 @@ function JobsPage() {
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {jobs.map((job) => (
-                <JobCard
-                  key={job.id}
-                  job={job}
-                  onClick={() => !analyzing && handleCardClick(job.id)}
-                  analysis={jobAnalyses.get(job.id)}
-                  isAnalyzing={analyzing}
-                />
-              ))}
+              {filteredJobs?.length > 0 ? (
+                filteredJobs.map((job) => (
+                  <JobCard
+                    key={job.id}
+                    job={job}
+                    onClick={() => !analyzing && handleCardClick(job.id)}
+                    analysis={jobAnalyses.get(job.id)}
+                    isAnalyzing={analyzing}
+                    isApplied={appliedJobIds.has(job.id)}
+                  />
+                ))
+              ) : (
+                <div className="col-span-full text-center py-12 text-gray-500">
+                  {filter === 'applied' ? "You haven't applied to any jobs yet." : "No jobs found."}
+                </div>
+              )}
             </div>
           )}
         </div>
@@ -175,9 +234,18 @@ function JobsPage() {
 
 export default withAuth(JobsPage, ["user"]);
 
-function JobCard({ job, onClick, analysis, isAnalyzing }) {
+function JobCard({ job, onClick, analysis, isAnalyzing, isApplied }) {
   // Determine eligibility badge
   const renderEligibilityBadge = () => {
+    if (isApplied) {
+      return (
+        <div className="flex items-center gap-1 px-3 py-1 rounded-full bg-blue-50 text-blue-600 text-sm font-medium whitespace-nowrap">
+          <CheckCircle2 size={14} />
+          Applied
+        </div>
+      );
+    }
+
     if (isAnalyzing || !analysis) {
       // Show loader or default state while analyzing
       return (
