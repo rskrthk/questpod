@@ -132,11 +132,27 @@ function JobsPage() {
     analyzeUserResume();
   }, [jobs, user?.resume]);
 
+  const getJobPriority = (job) => {
+    const isApplied = appliedJobIds.has(job.id);
+    const analysis = jobAnalyses.get(job.id);
+    
+    if (!isApplied && analysis?.eligible) return 0; // Eligible
+    if (!isApplied && !analysis) return 0.5; // Unanalyzed (Potentially Eligible)
+    if (isApplied) return 1; // Applied
+    if (!isApplied && analysis && !analysis.eligible) return 2; // Ineligible
+    
+    return 3; // Fallback
+  };
+
   const filteredJobs = jobs?.filter(job => {
     if (filter === 'applied') {
       return appliedJobIds.has(job.id);
     }
     return true;
+  })?.sort((a, b) => {
+    const priorityA = getJobPriority(a);
+    const priorityB = getJobPriority(b);
+    return priorityA - priorityB;
   });
 
   const handleCardClick = (id) => {
