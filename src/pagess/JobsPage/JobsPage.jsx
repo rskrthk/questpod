@@ -3,7 +3,7 @@ import { useEffect, useState, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchPublicJobs } from "@/redux/slices/jobSlice";
 import Layout from "@/components/Layout/Layout";
-import { Briefcase, Clock, IndianRupee, Building2, CheckCircle2, XCircle, Loader2 } from "lucide-react";
+import { Briefcase, Clock, IndianRupee, Building2, CheckCircle2, XCircle, Loader2, Bookmark } from "lucide-react";
 import moment from "moment";
 import axios from "axios";
 
@@ -22,6 +22,7 @@ function JobsPage() {
   const [jobAnalyses, setJobAnalyses] = useState(new Map());
   const [filter, setFilter] = useState('all');
   const [appliedJobIds, setAppliedJobIds] = useState(new Set());
+  const [savedJobIds, setSavedJobIds] = useState(new Set());
   const analyzingRef = useRef(false);
 
   useEffect(() => {
@@ -43,8 +44,26 @@ function JobsPage() {
         console.error("Error fetching applied jobs:", error);
       }
     };
+
+    // Fetch saved jobs
+    const fetchSavedJobs = async () => {
+      try {
+        const token = localStorage.getItem("token");
+        if (!token) return;
+        
+        const response = await axios.get("/api/user/saved-jobs/list", {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        
+        const ids = new Set(response.data.savedJobs.map(job => job.jobId));
+        setSavedJobIds(ids);
+      } catch (error) {
+        console.error("Error fetching saved jobs:", error);
+      }
+    };
     
     fetchAppliedJobs();
+    fetchSavedJobs();
   }, [dispatch]);
 
   // Analyze resume when jobs are loaded and user has resume
@@ -148,6 +167,9 @@ function JobsPage() {
     if (filter === 'applied') {
       return appliedJobIds.has(job.id);
     }
+    if (filter === 'saved') {
+      return savedJobIds.has(job.id);
+    }
     return true;
   })?.sort((a, b) => {
     const priorityA = getJobPriority(a);
@@ -215,6 +237,16 @@ function JobsPage() {
               >
                 Applied ({appliedJobIds.size})
               </button>
+              <button
+                onClick={() => setFilter('saved')}
+                className={`px-4 py-2 rounded-lg font-medium transition-all duration-200 ${
+                  filter === 'saved' 
+                    ? 'bg-blue-600 text-white shadow-md shadow-blue-200' 
+                    : 'bg-white text-gray-600 hover:bg-gray-50 border border-gray-200 hover:border-gray-300'
+                }`}
+              >
+                Saved ({savedJobIds.size})
+              </button>
             </div>
           </div>
 
@@ -237,7 +269,8 @@ function JobsPage() {
                 ))
               ) : (
                 <div className="col-span-full text-center py-12 text-gray-500">
-                  {filter === 'applied' ? "You haven't applied to any jobs yet." : "No jobs found."}
+                  {filter === 'applied' ? "You haven't applied to any jobs yet." : 
+                   filter === 'saved' ? "You haven't saved any jobs yet." : "No jobs found."}
                 </div>
               )}
             </div>

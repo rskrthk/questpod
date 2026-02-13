@@ -48,6 +48,7 @@ function JobDetailsPage({ id }) {
   const [parsedQuestions, setParsedQuestions] = useState([]);
   const [answers, setAnswers] = useState([]);
   const [applicationStatus, setApplicationStatus] = useState(null);
+  const [isSaved, setIsSaved] = useState(false);
 
   useEffect(() => {
     if (id) {
@@ -58,22 +59,32 @@ function JobDetailsPage({ id }) {
     };
   }, [dispatch, id]);
 
-  // Check application status
+  // Check application status and saved status
   useEffect(() => {
     const fetchStatus = async () => {
       if (user && id) {
         try {
           const token = localStorage.getItem("token") || sessionStorage.getItem("token");
-          const response = await axios.get(`/api/application/status?jobId=${id}`, {
+          
+          // Fetch application status
+          const appResponse = await axios.get(`/api/application/status?jobId=${id}`, {
             headers: { Authorization: `Bearer ${token}` }
           });
-          if (response.data.applied) {
-            setApplicationStatus(response.data.status);
+          if (appResponse.data.applied) {
+            setApplicationStatus(appResponse.data.status);
           } else {
             setApplicationStatus(null);
           }
+
+          // Fetch saved status
+          const savedResponse = await axios.get("/api/user/saved-jobs/list", {
+             headers: { Authorization: `Bearer ${token}` }
+          });
+          const savedJobs = savedResponse.data.savedJobs || [];
+          setIsSaved(savedJobs.some(s => s.jobId === parseInt(id)));
+
         } catch (error) {
-          console.error("Error fetching application status:", error);
+          console.error("Error fetching status:", error);
         }
       }
     };
@@ -170,6 +181,22 @@ function JobDetailsPage({ id }) {
       console.error("Application submission error:", error);
       toast.error(error.response?.data?.error || "Failed to submit application");
       setIsConfirmModalOpen(false);
+    }
+  };
+
+  const handleSaveToggle = async () => {
+    try {
+      const token = localStorage.getItem("token") || sessionStorage.getItem("token");
+      const response = await axios.post("/api/user/saved-jobs/toggle", {
+        jobId: id
+      }, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      setIsSaved(response.data.saved);
+      toast.success(response.data.saved ? "Job saved successfully" : "Job removed from saved");
+    } catch (error) {
+      console.error("Error toggling saved job:", error);
+      toast.error("Failed to update saved status");
     }
   };
 
@@ -293,9 +320,12 @@ function JobDetailsPage({ id }) {
                   Report Content Issue
                 </button>
               </div>
-              <button className="flex items-center gap-2 text-gray-600 font-medium hover:text-blue-600">
-                <Bookmark size={20} />
-                Save Job
+              <button 
+                onClick={handleSaveToggle}
+                className={`flex items-center gap-2 font-medium hover:text-blue-600 ${isSaved ? 'text-blue-600' : 'text-gray-600'}`}
+              >
+                <Bookmark size={20} fill={isSaved ? "currentColor" : "none"} />
+                {isSaved ? "Saved" : "Save Job"}
               </button>
             </div>
           </div>
