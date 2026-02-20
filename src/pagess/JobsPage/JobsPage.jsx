@@ -342,8 +342,8 @@ function JobCard({ job, onClick, analysis, isAnalyzing, isApplied }) {
       onClick={onClick}
       className="bg-white rounded-xl p-6 shadow-sm border border-gray-100 hover:shadow-md transition-shadow duration-300 cursor-pointer"
     >
-      <div className="flex justify-between items-start mb-4">
-        <div className="flex gap-4">
+      <div className="flex items-start justify-between gap-3 mb-4">
+        <div className="flex gap-4 flex-1 min-w-0">
           <div className="h-12 w-12 rounded-lg bg-gray-50 flex items-center justify-center border border-gray-100 overflow-hidden">
             {job.companyIcon ? (
               <img src={job.companyIcon} alt={job.company} className="h-full w-full object-contain" />
@@ -363,7 +363,9 @@ function JobCard({ job, onClick, analysis, isAnalyzing, isApplied }) {
             </div>
           </div>
         </div>
-        {renderEligibilityBadge()}
+        <div className="shrink-0 ml-2">
+          {renderEligibilityBadge()}
+        </div>
       </div>
 
       <div className="grid grid-cols-2 gap-y-3 gap-x-4 mb-6">
