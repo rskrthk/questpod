@@ -146,6 +146,7 @@ export const Job = pgTable("job", {
   expireIn: timestamp("expireIn"),
   companyIcon: text("companyIcon"),
   customQuestions: text("customQuestions"),
+  hiringProcess: text("hiringProcess"),
   status: varchar("status").default("Active"),
   adminId: text("adminId"), // To link to the admin who created it
   createdAt: timestamp("createdAt").defaultNow(),

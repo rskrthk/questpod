@@ -31,6 +31,7 @@ export async function POST(req) {
     const experience = getValue("experience");
     const expireIn = getValue("expireIn");
     const customQuestions = getValue("customQuestions");
+    const hiringProcess = getValue("hiringProcess");
 
     let companyIcon = null;
     const file = formData.get("companyIcon");
@@ -62,6 +63,7 @@ export async function POST(req) {
         expireIn: expireIn ? new Date(expireIn) : null,
         companyIcon,
         customQuestions,
+        hiringProcess,
         adminId: user.id,
       })
       .returning();

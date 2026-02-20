@@ -211,6 +211,9 @@ function JobDetailsPage({ id }) {
   if (!currentJob) return null;
 
   const skillsList = currentJob.skills ? currentJob.skills.split(',').map(s => s.trim()) : [];
+  const hiringRounds = currentJob.hiringProcess
+    ? currentJob.hiringProcess.split('\n').map(r => r.trim()).filter(Boolean)
+    : [];
 
   return (
     <Layout>
@@ -329,6 +332,29 @@ function JobDetailsPage({ id }) {
               </button>
             </div>
           </div>
+
+        {hiringRounds.length > 0 && (
+          <div className="bg-white rounded-xl p-8 shadow-sm border border-gray-100 mb-6">
+            <h2 className="text-xl font-bold text-gray-900 mb-2">Hiring Process</h2>
+            <p className="text-sm text-gray-500 mb-4">
+              A multi-round interview process where the candidate is evaluated across different stages.
+            </p>
+            <div className="flex items-center gap-2 text-sm text-gray-600 mb-4">
+              <HelpCircle size={16} className="text-gray-400" />
+              <span>Number of Rounds: {hiringRounds.length}</span>
+            </div>
+            <div className="flex flex-wrap gap-3">
+              {hiringRounds.map((round, index) => (
+                <div
+                  key={index}
+                  className="px-4 py-2 rounded-full bg-gray-50 text-gray-700 text-sm font-medium border border-gray-200"
+                >
+                  {`Round ${index + 1}: ${round}`}
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
 
           {/* Application Timeline */}
           {applicationStatus && (

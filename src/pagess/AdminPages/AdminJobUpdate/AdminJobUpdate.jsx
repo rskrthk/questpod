@@ -313,6 +313,23 @@ function AdminJobUpdate() {
                 </div>
 
                 <div className="mb-6">
+                  <label htmlFor="hiringProcess" className={labelStyle}>
+                    Hiring Process
+                  </label>
+                  <textarea
+                    id="hiringProcess"
+                    name="hiringProcess"
+                    rows="4"
+                    className={inputStyle}
+                    placeholder={"Exploratory Call\nOnline Coding Test\nTechnical Round 1\nTechnical Round 2\nBehavioral Round"}
+                    {...formik.getFieldProps("hiringProcess")}
+                  />
+                  {formik.touched.hiringProcess && formik.errors.hiringProcess && (
+                    <p className={errorStyle}>{formik.errors.hiringProcess}</p>
+                  )}
+                </div>
+
+                <div className="mb-6">
                   <label htmlFor="skills" className={labelStyle}>
                     Skills
                   </label>

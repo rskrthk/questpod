@@ -31,6 +31,7 @@ export function useAdminJobUpdate() {
     skills: Yup.string(),
     experience: Yup.string(),
     expireIn: Yup.date().nullable(),
+    hiringProcess: Yup.string(),
   });
 
   const formik = useFormik({
@@ -49,6 +50,7 @@ export function useAdminJobUpdate() {
       skills: "",
       experience: "",
       expireIn: "",
+      hiringProcess: "",
     },
     validationSchema,
     onSubmit: async (values) => {
@@ -106,6 +108,7 @@ export function useAdminJobUpdate() {
             skills: data.skills || "",
             experience: data.experience || "",
             expireIn: data.expireIn ? new Date(data.expireIn).toISOString().split('T')[0] : "",
+            hiringProcess: data.hiringProcess || "",
             customQuestions: (() => {
               try {
                 return data.customQuestions ? JSON.parse(data.customQuestions) : [];

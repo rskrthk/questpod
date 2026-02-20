@@ -25,6 +25,7 @@ export function useAdminJobCreate() {
     skills: Yup.string(),
     experience: Yup.string(),
     expireIn: Yup.date().nullable(),
+    hiringProcess: Yup.string(),
     customQuestions: Yup.array().of(
       Yup.object().shape({
         question: Yup.string().required("Question is required"),
@@ -48,6 +49,7 @@ export function useAdminJobCreate() {
       skills: "",
       experience: "",
       expireIn: "",
+      hiringProcess: "",
       customQuestions: [],
     },
     validationSchema,
