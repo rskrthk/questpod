@@ -10,10 +10,13 @@ export async function POST(req) {
     const { subject, type, submissionData, to } = await req.json();
 
     // ✅ Default recipient if `to` not provided
-    const recipient = to || 'hello@questpodai.com';
+    const recipient = to || 'Tarun.m@preneurs.in';
 
     if (!subject || !type || !submissionData) {
       return NextResponse.json({ error: 'Missing fields' }, { status: 400 });
+    }
+    if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
+      return NextResponse.json({ error: 'Email credentials are not configured' }, { status: 500 });
     }
 
     // ✅ Create transporter
