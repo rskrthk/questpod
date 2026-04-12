@@ -123,6 +123,10 @@ export default function Header() {
             label: "Attendance",
             path: "/attendance",
           },
+          {
+            label: "AI Chatbot",
+            path: "/ai-chatbot",
+          },
         ],
       },
       {
