@@ -119,6 +119,10 @@ export default function Header() {
             label: "Resume Builder",
             path: isLoggedIn ? "/resume" : "/resume-landing",
           },
+          {
+            label: "Attendance",
+            path: "/attendance",
+          },
         ],
       },
       {
