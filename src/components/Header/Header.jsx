@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import toast from "react-hot-toast";
@@ -19,6 +19,7 @@ export default function Header() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [userRole, setUserRole] = useState(null);
   const [productsDropdownOpen, setProductsDropdownOpen] = useState(false);
+  const [activeProductGroup, setActiveProductGroup] = useState(null);
   const [showResumeModal, setShowResumeModal] = useState(false);
 
   const router = useRouter();
@@ -105,24 +106,48 @@ export default function Header() {
     { label: "Contact", path: "/contact" },
   ];
 
-  const productItems = [
-    {
-      label: "AI Mock Interview",
-      path: isLoggedIn ? "/new-logindashboard" : "/new-logindashboard",
-    },
-    {
-      label: "Resume Builder",
-      path: isLoggedIn ? "/resume" : "/resume-landing",
-    },
-    {
-      label: "AI Chat",
-      path: "/ai-chat",
-    },
-    {
-      label: "Aptitude",
-      path: "/aptitude",
-    },
-  ];
+  const productGroups = useMemo(
+    () => [
+      {
+        label: "University",
+        items: [
+          {
+            label: "Mock Interview",
+            path: isLoggedIn ? "/new-logindashboard" : "/new-logindashboard",
+          },
+          {
+            label: "Resume Builder",
+            path: isLoggedIn ? "/resume" : "/resume-landing",
+          },
+        ],
+      },
+      {
+        label: "Student",
+        items: [
+          {
+            label: "Mock Interview",
+            path: isLoggedIn ? "/new-logindashboard" : "/new-logindashboard",
+          },
+          {
+            label: "Resume Builder",
+            path: isLoggedIn ? "/resume" : "/resume-landing",
+          },
+          {
+            label: "AI Chat",
+            path: "/ai-chat",
+          },
+          {
+            label: "Aptitude",
+            path: "/aptitude",
+          },
+        ],
+      },
+    ],
+    [isLoggedIn]
+  );
+
+  const allProductItems = productGroups.flatMap((group) => group.items);
+  const isProductsActive = allProductItems.some((item) => pathname === item.path);
 
   if (isNavigating) return <FullScreenLoader />;
 
@@ -167,12 +192,18 @@ export default function Header() {
           {/* Products Dropdown */}
           <div 
             className="relative"
-            onMouseEnter={() => setProductsDropdownOpen(true)}
-            onMouseLeave={() => setProductsDropdownOpen(false)}
+            onMouseEnter={() => {
+              setProductsDropdownOpen(true);
+              setActiveProductGroup(null);
+            }}
+            onMouseLeave={() => {
+              setProductsDropdownOpen(false);
+              setActiveProductGroup(null);
+            }}
           >
             <div
               className={`px-4 py-2 rounded-full transition-all duration-200 cursor-pointer flex items-center gap-1 ${
-                productItems.some(item => pathname === item.path)
+                isProductsActive
                   ? "text-white bg-purple-600 shadow-md"
                   : "text-gray-800 hover:text-purple-600"
               }`}
@@ -203,24 +234,54 @@ export default function Header() {
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: 10 }}
                   transition={{ duration: 0.2 }}
-                  className="absolute top-full left-0 mt-2 w-56 bg-white rounded-lg shadow-lg border border-gray-200 py-2 z-50"
+                  className={`absolute top-full left-0 mt-2 bg-white rounded-lg shadow-lg border border-gray-200 p-2 z-50 ${
+                    activeProductGroup ? "w-[420px]" : "w-52"
+                  }`}
                 >
-                  {productItems.map((item) => {
-                    const isActive = pathname === item.path;
-                    return (
-                      <div
-                        key={item.path}
-                        onClick={() => handleNavigate(item.path)}
-                        className={`w-full text-left px-4 py-3 transition-all duration-200 hover:bg-purple-50 cursor-pointer ${
-                          isActive
-                            ? "text-purple-600 bg-purple-50 font-medium"
-                            : "text-gray-700 hover:text-purple-600"
-                        }`}
-                      >
-                        {item.label}
+                  <div className="flex">
+                    <div className={activeProductGroup ? "w-40 pr-2" : "w-full"}>
+                      {productGroups.map((group) => {
+                        const isActiveGroup = activeProductGroup === group.label;
+                        return (
+                          <div
+                            key={group.label}
+                            onMouseEnter={() => setActiveProductGroup(group.label)}
+                            className={`px-3 py-2 rounded-md cursor-pointer transition-colors flex items-center justify-between ${
+                              isActiveGroup
+                                ? "bg-purple-50 text-purple-700 font-medium"
+                                : "text-gray-700 hover:bg-gray-50"
+                            }`}
+                          >
+                            <span className="text-sm">{group.label}</span>
+                            <span className="text-gray-400">›</span>
+                          </div>
+                        );
+                      })}
+                    </div>
+
+                    {activeProductGroup && (
+                      <div className="flex-1 border-l border-gray-100 pl-2">
+                        {productGroups
+                          .find((g) => g.label === activeProductGroup)
+                          ?.items.map((item) => {
+                            const isActive = pathname === item.path;
+                            return (
+                              <div
+                                key={`${activeProductGroup}-${item.path}`}
+                                onClick={() => handleNavigate(item.path)}
+                                className={`w-full text-left px-3 py-2 rounded-md transition-all duration-200 cursor-pointer ${
+                                  isActive
+                                    ? "text-purple-600 bg-purple-50 font-medium"
+                                    : "text-gray-700 hover:text-purple-600 hover:bg-purple-50"
+                                }`}
+                              >
+                                {item.label}
+                              </div>
+                            );
+                          })}
                       </div>
-                    );
-                  })}
+                    )}
+                  </div>
                 </motion.div>
               )}
             </AnimatePresence>
@@ -315,7 +376,7 @@ export default function Header() {
               <div
                 onClick={() => setProductsDropdownOpen(!productsDropdownOpen)}
                 className={`flex items-center justify-between w-full text-left py-2 px-4 rounded-md transition duration-200 cursor-pointer ${
-                  productItems.some(item => pathname === item.path)
+                  isProductsActive
                     ? "bg-purple-100 text-purple-600"
                     : "hover:bg-gray-100 text-gray-700"
                 }`}
@@ -347,26 +408,33 @@ export default function Header() {
                     transition={{ duration: 0.2 }}
                     className="ml-4 space-y-1"
                   >
-                    {productItems.map((item) => {
-                      const isActive = pathname === item.path;
-                      return (
-                        <div
-                          key={item.path}
-                          onClick={() => {
-                            setMenuOpen(false);
-                            setProductsDropdownOpen(false);
-                            handleNavigate(item.path);
-                          }}
-                          className={`block w-full text-left py-2 px-4 rounded-md transition duration-200 text-sm cursor-pointer ${
-                            isActive
-                              ? "bg-purple-100 text-purple-600"
-                              : "hover:bg-gray-100 text-gray-600"
-                          }`}
-                        >
-                          {item.label}
+                    {productGroups.map((group, groupIndex) => (
+                      <div key={group.label} className={groupIndex === 0 ? "" : "pt-2"}>
+                        <div className="px-4 pt-1 pb-1 text-xs font-semibold tracking-wide text-gray-400 uppercase">
+                          {group.label}
                         </div>
-                      );
-                    })}
+                        {group.items.map((item) => {
+                          const isActive = pathname === item.path;
+                          return (
+                            <div
+                              key={`${group.label}-${item.path}`}
+                              onClick={() => {
+                                setMenuOpen(false);
+                                setProductsDropdownOpen(false);
+                                handleNavigate(item.path);
+                              }}
+                              className={`block w-full text-left py-2 px-4 rounded-md transition duration-200 text-sm cursor-pointer ${
+                                isActive
+                                  ? "bg-purple-100 text-purple-600"
+                                  : "hover:bg-gray-100 text-gray-600"
+                              }`}
+                            >
+                              {item.label}
+                            </div>
+                          );
+                        })}
+                      </div>
+                    ))}
                   </motion.div>
                 )}
               </AnimatePresence>
