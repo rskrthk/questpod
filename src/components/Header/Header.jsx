@@ -127,6 +127,10 @@ export default function Header() {
             label: "Chatbot/Admission",
             path: "/ai-chatbot",
           },
+          {
+            label: "Placement",
+            path: "/placement",
+          },
         ],
       },
       {
