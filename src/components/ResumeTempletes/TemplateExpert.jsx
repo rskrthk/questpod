@@ -1,5 +1,6 @@
 import React from "react";
 import { parse } from "node-html-parser";
+import { categorizeSkillsForResumeTemplates } from "@/components/ResumeUtils/categorizeSkillsForResumeTemplates";
 
 const TemplateExpert = ({ resumeData }) => {
   const {
@@ -11,12 +12,6 @@ const TemplateExpert = ({ resumeData }) => {
     projects,
     websiteSocialMedia,
   } = resumeData;
-
-  const formatSkills = (skills) => {
-    return Array.isArray(skills) && skills.length > 0
-      ? skills.map((s) => s.trim()).join(", ")
-      : "N/A";
-  };
 
   const renderRichTextContentWithLists = (htmlContent) => {
     if (!htmlContent) return null;
@@ -71,6 +66,8 @@ const TemplateExpert = ({ resumeData }) => {
   };
 
   const hasHtmlList = (s) => typeof s === "string" && /<(ul|ol)[^>]*>/i.test(s);
+
+  const categorizedSkills = categorizeSkillsForResumeTemplates(keySkills);
 
   return (
     <div className="font-serif text-gray-800 p-8 md:p-10 bg-white">
@@ -146,58 +143,86 @@ const TemplateExpert = ({ resumeData }) => {
       {/* Work Experience - Central and Detailed */}
       {workExperience && workExperience.length > 0 && (
         <section className="mb-8">
-          <h2 className="text-2xl font-bold text-gray-900 mb-3">EXPERIENCE</h2>
+          <h2 className="text-2xl font-bold text-gray-900 mb-3">
+            WORK EXPERIENCE
+          </h2>
           <div className="space-y-6">
-            {workExperience.map((exp) => (
-              <div key={exp.id}>
-                <div className="flex justify-between items-baseline mb-1">
-                  <h3 className="font-semibold text-lg text-gray-900">
-                    {exp.role}
-                  </h3>
-                  <p className="text-sm italic text-gray-600">
-                    {exp.startDate} – {exp.endDate}
-                  </p>
+            {workExperience.map((exp) => {
+              const title =
+                exp.role ||
+                exp.parentCompany ||
+                exp.company ||
+                exp.projectTitle ||
+                exp.domain ||
+                "Work experience";
+              const responsibilities = exp.responsibilities || exp.description;
+
+              return (
+                <div key={exp.id}>
+                  <div className="flex justify-between items-baseline mb-1">
+                    <h3 className="font-semibold text-lg text-gray-900">
+                      {title}
+                    </h3>
+                    <p className="text-sm italic text-gray-600">
+                      {exp.startDate} – {exp.endDate}
+                    </p>
+                  </div>
+                  {exp.projectTitle && (
+                    <p className="text-sm text-gray-600 mb-0.5">
+                      <span className="font-semibold">Project:</span>{" "}
+                      {exp.projectTitle}
+                    </p>
+                  )}
+                  {exp.domain && (
+                    <p className="text-sm text-gray-600 mb-1">
+                      <span className="font-semibold">Domain:</span> {exp.domain}
+                    </p>
+                  )}
+                  {responsibilities && (
+                    hasHtmlList(responsibilities) ? (
+                      <div className="text-base leading-relaxed">
+                        {renderRichTextContentWithLists(responsibilities)}
+                      </div>
+                    ) : (
+                      <ul className="list-disc list-outside ml-5 text-base leading-relaxed space-y-1">
+                        {String(responsibilities)
+                          .split("\n")
+                          .filter(Boolean)
+                          .map((resp, idx) => (
+                            <li
+                              key={idx}
+                              dangerouslySetInnerHTML={{
+                                __html: resp.replace(
+                                  /\*\*(.*?)\*\*/g,
+                                  "<strong>$1</strong>"
+                                ),
+                              }}
+                            />
+                          ))}
+                      </ul>
+                    )
+                  )}
                 </div>
-                <p className="text-base font-medium text-gray-700 mb-2">
-                  {exp.company}
-                  {exp.location ? `, ${exp.location}` : ""}
-                </p>
-                {exp.responsibilities && (
-                  hasHtmlList(exp.responsibilities) ? (
-                    <div className="text-base leading-relaxed">
-                      {renderRichTextContentWithLists(exp.responsibilities)}
-                    </div>
-                  ) : (
-                    <ul className="list-disc list-outside ml-5 text-base leading-relaxed space-y-1">
-                      {exp.responsibilities
-                        .split("\n")
-                        .filter(Boolean)
-                        .map((resp, idx) => (
-                          <li
-                            key={idx}
-                            dangerouslySetInnerHTML={{
-                              __html: resp.replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>"),
-                            }}
-                          />
-                        ))}
-                    </ul>
-                  )
-                )}
-              </div>
-            ))}
+              );
+            })}
           </div>
         </section>
       )}
 
       {/* Key Skills */}
-      {keySkills && keySkills.length > 0 && (
+      {Object.keys(categorizedSkills).length > 0 && (
         <section className="mb-8">
           <h2 className="text-2xl font-bold text-gray-900 mb-3">
             CORE COMPETENCIES
           </h2>
-          <p className="text-base leading-relaxed text-gray-700">
-            {formatSkills(keySkills)}
-          </p>
+          <div className="text-base leading-relaxed text-gray-700 space-y-1">
+            {Object.entries(categorizedSkills).map(([category, skillsList]) => (
+              <p key={category} className="flex flex-wrap">
+                <span className="font-semibold mr-1">{category}:</span>{" "}
+                {skillsList}
+              </p>
+            ))}
+          </div>
         </section>
       )}
 

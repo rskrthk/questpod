@@ -1,5 +1,6 @@
 import React from "react";
 import { parse } from "node-html-parser";
+import { categorizeSkillsForResumeTemplates } from "@/components/ResumeUtils/categorizeSkillsForResumeTemplates";
 
 const TemplateBasic = ({ resumeData }) => {
   const {
@@ -11,13 +12,6 @@ const TemplateBasic = ({ resumeData }) => {
     projects,
     websiteSocialMedia,
   } = resumeData;
-
-  // Helper for formatting skills (can be simple comma-separated for basic)
-  const formatSkills = (skills) => {
-    return Array.isArray(skills) && skills.length > 0
-      ? skills.map((s) => s.trim()).join(", ")
-      : "N/A";
-  };
 
   const renderRichTextContentWithLists = (htmlContent) => {
     if (!htmlContent) return null;
@@ -72,6 +66,8 @@ const TemplateBasic = ({ resumeData }) => {
   };
 
   const hasHtmlList = (s) => typeof s === "string" && /<(ul|ol)[^>]*>/i.test(s);
+
+  const categorizedSkills = categorizeSkillsForResumeTemplates(keySkills);
 
   return (
     <div className="font-sans text-gray-800 p-6 sm:p-8 md:p-10">
@@ -152,58 +148,86 @@ const TemplateBasic = ({ resumeData }) => {
         </section>
       )}
       {/* Key Skills */}
-      {keySkills && keySkills.length > 0 && (
+      {Object.keys(categorizedSkills).length > 0 && (
         <section className="mb-6">
           <h2 className="text-xl font-bold border-b-2 border-gray-400 pb-1 mb-3">
             SKILLS
           </h2>
-          <p className="text-sm leading-relaxed">{formatSkills(keySkills)}</p>
+          <div className="text-sm leading-relaxed space-y-1">
+            {Object.entries(categorizedSkills).map(([category, skillsList]) => (
+              <p key={category} className="flex flex-wrap">
+                <span className="font-semibold mr-1">{category}:</span>{" "}
+                {skillsList}
+              </p>
+            ))}
+          </div>
         </section>
       )}
       {/* Work Experience */}
       {workExperience && workExperience.length > 0 && (
         <section className="mb-6">
           <h2 className="text-xl font-bold border-b-2 border-gray-400 pb-1 mb-3">
-            EXPERIENCE
+            WORK EXPERIENCE
           </h2>
           <div className="space-y-4">
-            {workExperience.map((exp) => (
-              <div key={exp.id}>
-                <div className="flex justify-between items-baseline mb-0.5">
-                  <h3 className="font-semibold text-base text-gray-900">
-                    {exp.role}
-                  </h3>
-                  <p className="text-sm italic text-gray-600">
-                    {exp.startDate} – {exp.endDate}
-                  </p>
+            {workExperience.map((exp) => {
+              const title =
+                exp.role ||
+                exp.parentCompany ||
+                exp.company ||
+                exp.projectTitle ||
+                exp.domain ||
+                "Work experience";
+              const responsibilities = exp.responsibilities || exp.description;
+
+              return (
+                <div key={exp.id}>
+                  <div className="flex justify-between items-baseline mb-0.5">
+                    <h3 className="font-semibold text-base text-gray-900">
+                      {title}
+                    </h3>
+                    <p className="text-sm italic text-gray-600">
+                      {exp.startDate} – {exp.endDate}
+                    </p>
+                  </div>
+                  {exp.projectTitle && (
+                    <p className="text-sm text-gray-600 mb-0.5">
+                      <span className="font-semibold">Project:</span>{" "}
+                      {exp.projectTitle}
+                    </p>
+                  )}
+                  {exp.domain && (
+                    <p className="text-sm text-gray-600 mb-0.5">
+                      <span className="font-semibold">Domain:</span> {exp.domain}
+                    </p>
+                  )}
+                  {responsibilities && (
+                    hasHtmlList(responsibilities) ? (
+                      <div className="text-sm leading-relaxed">
+                        {renderRichTextContentWithLists(responsibilities)}
+                      </div>
+                    ) : (
+                      <ul className="list-disc list-outside ml-5 text-sm leading-relaxed space-y-0.5 [&_li>p]:m-0">
+                        {String(responsibilities)
+                          .split("\n")
+                          .filter(Boolean)
+                          .map((resp, idx) => (
+                            <li
+                              key={idx}
+                              dangerouslySetInnerHTML={{
+                                __html: resp.replace(
+                                  /\*\*(.*?)\*\*/g,
+                                  "<strong>$1</strong>"
+                                ),
+                              }}
+                            />
+                          ))}
+                      </ul>
+                    )
+                  )}
                 </div>
-                <p className="text-sm text-gray-700 mb-1">
-                  {exp.company}
-                  {exp.location ? `, ${exp.location}` : ""}
-                </p>
-                {exp.responsibilities && (
-                  hasHtmlList(exp.responsibilities) ? (
-                    <div className="text-sm leading-relaxed">
-                      {renderRichTextContentWithLists(exp.responsibilities)}
-                    </div>
-                  ) : (
-                    <ul className="list-disc list-outside ml-5 text-sm leading-relaxed space-y-0.5 [&_li>p]:m-0">
-                      {exp.responsibilities
-                        .split("\n")
-                        .filter(Boolean)
-                        .map((resp, idx) => (
-                          <li
-                            key={idx}
-                            dangerouslySetInnerHTML={{
-                              __html: resp.replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>"),
-                            }}
-                          />
-                        ))}
-                    </ul>
-                  )
-                )}
-              </div>
-            ))}
+              );
+            })}
           </div>
         </section>
       )}

@@ -596,9 +596,10 @@ const TemplateModernHtml = ({ resumeData }) => {
   const sectionsForFresher = [
     profileSummarySection,
     skillsSection,
-    projectsSection,
     educationSection,
     internshipsSection,
+    workExperienceSection,
+    projectsSection,
     certificationsSection,
     ...customSections,
   ].filter(Boolean);
@@ -700,4 +701,3 @@ const TemplateModernHtml = ({ resumeData }) => {
 };
 
 export default TemplateModernHtml;
-

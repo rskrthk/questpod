@@ -579,6 +579,47 @@ const TemplateModernPdf = ({ resumeData }) => {
         </View>
       ),
     },
+
+    workExperience &&
+    workExperience.length > 0 && {
+      title: "WORK EXPERIENCE",
+      data: workExperience,
+      render: () => (
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>WORK EXPERIENCE</Text>
+          {workExperience.map((exp, index) => (
+            <View
+              key={exp.id || index}
+              style={styles.workItem}
+              break={index > 0}
+            >
+              <View style={styles.itemHeader}>
+                <Text style={styles.itemTitle}>{exp.parentCompany}</Text>
+                <Text style={styles.itemDate}>
+                  {formatDate(exp.startDate)} – {formatDate(exp.endDate)}
+                </Text>
+              </View>
+              {exp.role && <Text style={styles.roleText}>{exp.role}</Text>}
+              {exp.projectTitle && (
+                <Text style={styles.subDetail}>
+                  <Text style={styles.bold}>Project:</Text> {exp.projectTitle}
+                </Text>
+              )}
+
+              {exp.domain && (
+                <Text style={styles.subDetail}>
+                  <Text style={styles.bold}>Domain:</Text> {exp.domain}
+                </Text>
+              )}
+
+              {exp.description && (
+                <View>{renderHtmlContent(exp.description)}</View>
+              )}
+            </View>
+          ))}
+        </View>
+      ),
+    },
   ].filter(Boolean); // Filter out nulls from conditional rendering
 
   // This array determines the order for NON-FRESHERS (existing order)

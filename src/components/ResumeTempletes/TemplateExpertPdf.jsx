@@ -1,6 +1,7 @@
 import React from "react";
 import { Document, Page, Text, View, StyleSheet, Link as PdfLink } from "@react-pdf/renderer";
 import { parse } from "node-html-parser";
+import { categorizeSkillsForResumeTemplates } from "@/components/ResumeUtils/categorizeSkillsForResumeTemplates";
 
 const styles = StyleSheet.create({
   page: {
@@ -165,7 +166,7 @@ const hasHtml = (value) => /<[^>]+>/.test(String(value));
 const TemplateExpertPdf = ({ resumeData }) => {
   const { personalDetails, profileSummary, education, workExperience, keySkills, projects, websiteSocialMedia } = resumeData;
 
-  const skillsText = Array.isArray(keySkills) && keySkills.length > 0 ? keySkills.join(", ") : "N/A";
+  const categorizedSkills = categorizeSkillsForResumeTemplates(keySkills);
 
   return (
     <Document>
@@ -210,31 +211,56 @@ const TemplateExpertPdf = ({ resumeData }) => {
 
         {Array.isArray(workExperience) && workExperience.length > 0 && (
           <View style={styles.section}>
-            <Text style={styles.sectionTitle}>EXPERIENCE</Text>
-            {workExperience.map((exp, idx) => (
-              <View key={exp.id || idx}>
-                <View style={styles.rowBetween}>
-                  <Text style={{ fontSize: 12, fontWeight: "bold" }}>{exp.role}</Text>
-                  <Text style={{ color: "#6b7280" }}>{exp.startDate} – {exp.endDate}</Text>
+            <Text style={styles.sectionTitle}>WORK EXPERIENCE</Text>
+            {workExperience.map((exp, idx) => {
+              const title =
+                exp.role ||
+                exp.parentCompany ||
+                exp.company ||
+                exp.projectTitle ||
+                exp.domain ||
+                "Work experience";
+              const responsibilities = exp.responsibilities || exp.description;
+
+              return (
+                <View key={exp.id || idx}>
+                  <View style={styles.rowBetween}>
+                    <Text style={{ fontSize: 12, fontWeight: "bold" }}>
+                      {title}
+                    </Text>
+                    <Text style={{ color: "#6b7280" }}>
+                      {exp.startDate} – {exp.endDate}
+                    </Text>
+                  </View>
+                  {exp.projectTitle && (
+                    <Text style={{ fontSize: 11, color: "#6b7280", marginBottom: 2 }}>
+                      <Text style={{ fontWeight: "bold" }}>Project:</Text> {exp.projectTitle}
+                    </Text>
+                  )}
+                  {exp.domain && (
+                    <Text style={{ fontSize: 11, color: "#6b7280", marginBottom: 2 }}>
+                      <Text style={{ fontWeight: "bold" }}>Domain:</Text> {exp.domain}
+                    </Text>
+                  )}
+                  {responsibilities && (
+                    hasHtml(responsibilities)
+                      ? <View>{renderHtmlContent(responsibilities)}</View>
+                      : renderBulletListFromLines(responsibilities)
+                  )}
                 </View>
-                <Text style={{ fontSize: 11, color: "#374151", marginBottom: 2 }}>
-                  {exp.company}
-                  {exp.location ? `, ${exp.location}` : ""}
-                </Text>
-                {exp.responsibilities && (
-                  hasHtml(exp.responsibilities)
-                    ? <View>{renderHtmlContent(exp.responsibilities)}</View>
-                    : renderBulletListFromLines(exp.responsibilities)
-                )}
-              </View>
-            ))}
+              );
+            })}
           </View>
         )}
 
-        {Array.isArray(keySkills) && keySkills.length > 0 && (
+        {Object.keys(categorizedSkills).length > 0 && (
           <View style={styles.section}>
             <Text style={styles.sectionTitle}>CORE COMPETENCIES</Text>
-            <Text>{skillsText}</Text>
+            {Object.entries(categorizedSkills).map(([category, skillsList]) => (
+              <Text key={category}>
+                <Text style={{ fontWeight: "bold" }}>{category}:</Text> {skillsList}
+              </Text>
+            ))}
           </View>
         )}
 
