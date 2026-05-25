@@ -185,14 +185,15 @@ export default function Header() {
               </button>
 
               {productsOpen && (
-                <div
-                  className={`absolute top-full left-0 mt-2 bg-white rounded-2xl shadow-xl border border-gray-100 p-2 z-50 overflow-hidden ${
-                    activeProductGroup ? "w-[420px]" : "w-56"
-                  }`}
-                  style={{ boxShadow: "0 20px 60px rgba(79,70,229,0.15), 0 4px 16px rgba(0,0,0,0.06)" }}
-                >
-                  <div className="flex">
-                    <div className={activeProductGroup ? "w-44 shrink-0" : "w-full"}>
+                <div className="absolute top-full left-0 pt-2 z-50">
+                  <div
+                    className={`bg-white rounded-2xl shadow-xl border border-gray-100 p-2 overflow-hidden ${
+                      activeProductGroup ? "w-[420px]" : "w-56"
+                    }`}
+                    style={{ boxShadow: "0 20px 60px rgba(79,70,229,0.15), 0 4px 16px rgba(0,0,0,0.06)" }}
+                  >
+                    <div className="flex">
+                      <div className={activeProductGroup ? "w-44 shrink-0" : "w-full"}>
                       {productGroups.map((group) => {
                         const isActive = activeProductGroup === group.label;
                         return (
@@ -236,7 +237,8 @@ export default function Header() {
                     )}
                   </div>
                 </div>
-              )}
+              </div>
+            )}
             </div>
           </div>
 
