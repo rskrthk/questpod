@@ -8,6 +8,10 @@ export async function POST(req) {
   try {
     const formData = await req.formData();
 
+    // Derive base URL from the incoming request so it works in both local and production environments
+    const reqUrl = new URL(req.url);
+    const baseUrl = `${reqUrl.protocol}//${reqUrl.host}`;
+
     const universityName = formData.get("universityName");
     const name = formData.get("name");
     const email = formData.get("email");
@@ -39,8 +43,6 @@ export async function POST(req) {
 
     // 1. Insert the new values into the database
     await db.insert(ContactForm).values(submissionData);
-
-    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
 
     const subjectName = `New Contact from ${universityName}`;
     const data = {

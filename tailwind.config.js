@@ -14,6 +14,21 @@ module.exports = {
         a4: "210mm", // Standard A4 width for print considerations
       },
       colors: {
+        // Redefine indigo to map to violet (QuestPodAI Logo end color, subtle primary theme)
+        indigo: {
+          50: '#f5f3ff',
+          100: '#ede9fe',
+          200: '#ddd6fe',
+          300: '#c4b5fd',
+          400: '#a78bfa',
+          500: '#8b5cf6',
+          600: '#7c3aed',
+          700: '#6d28d9',
+          800: '#5b21b6',
+          900: '#4c1d95',
+          950: '#2e1065',
+        },
+
         // --- Original Enhancv-style colors (keep if you still use them) ---
         "primary-text": "#1a202c", // Very dark grey/almost black for main text
         "secondary-text": "#4a5568", // Slightly lighter grey for secondary text

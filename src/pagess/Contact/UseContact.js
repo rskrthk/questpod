@@ -17,20 +17,20 @@ const useContactForm = () => {
     universityName: "",
     name: "",
     email: "",
+    phone: "",
     issueType: "",
-    subject: "",
     message: "",
     attachment: null,
   };
 
   const validationSchema = Yup.object({
-    universityName: Yup.string().required("University name is required"),
+    universityName: Yup.string(),
     name: Yup.string().required("Your name is required"),
     email: Yup.string().email("Invalid email").required("Email is required"),
-    issueType: Yup.string().required("Enquiry type is required"), // Changed to "Enquiry type"
-    subject: Yup.string().required("Subject is required"),
+    phone: Yup.string(),
+    issueType: Yup.string().required("Please select your role"),
     message: Yup.string().required("Message is required"),
-    attachment: Yup.mixed().nullable(), // Allow attachment to be null
+    attachment: Yup.mixed().nullable(),
   });
 
   // Updated handleSubmit to accept a local reset function for file states

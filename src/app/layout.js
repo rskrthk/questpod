@@ -7,20 +7,22 @@ import { Inter } from "next/font/google";
 import { GoogleTagManager } from '@next/third-parties/google';
 
 const inter = Inter({
-  subsets: ["latin"],
-  display: "swap",
-  variable: "--font-inter",
+  subsets: ["latin"],
+  display: "swap",
+  variable: "--font-inter",
 });
 
 export const metadata = {
-  title: "QUESTPODAI",
-  description:
-    "Master your next career move with AI QUESTPODAI. Use our powerful tools for realistic mock interviews, craft a standout resume, and receive intelligent suggestions tailored to your success.",
-  icons: {
-    icon: "/favicons.svg",
-    shortcut: "/favicons.svg",
-    apple: "/favicons.svg",
-  },
+  title: "QuestPodAI — Academic Intelligence Platform",
+  description:
+    "QuestPodAI is India's Academic Intelligence Platform. AI mock interviews, resume builder, academic coaching, placement intelligence, and institutional management for universities, colleges, and schools.",
+  keywords:
+    "academic intelligence platform India, AI mock interview, AI resume builder, student success platform, LMS India, college placement AI, QuestPodAI, aptitude test AI",
+  icons: {
+    icon: "/favicons.svg",
+    shortcut: "/favicons.svg",
+    apple: "/favicons.svg",
+  },
 };
 
 export default function RootLayout({ children }) {

@@ -2,334 +2,298 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ═══════════════════════════════════════════════════════
+   QuestPodAI Design System — CSS Custom Properties
+═══════════════════════════════════════════════════════ */
+
 :root {
   --background: #ffffff;
-  --foreground: #171717;
+  --foreground: #0f0f23;
   --font-body: var(--font-inter);
+
+  /* Brand Colors */
+  --brand-primary:   #7c3aed; /* violet-600 (subtle base brand color) */
+  --brand-secondary: #c026d3; /* fuchsia-600 */
+  --brand-dark:      #120a21; /* deep violet-dark */
+  --brand-accent:    #a78bfa; /* violet-400 */
+
+  /* Gradients */
+  --grad-hero:   linear-gradient(135deg, #120a21, #2e1065, #1e1b4b);
+  --grad-brand:  linear-gradient(135deg, #c026d3, #7c3aed); /* Fuchsia-600 to Violet-600 */
+  --grad-subtle: linear-gradient(135deg, #f5f3ff, #faf5ff);
+
+  /* Shadows */
+  --shadow-card:  0 4px 24px rgba(124, 58, 237, 0.06);
+  --shadow-glow:  0 0 40px rgba(124, 58, 237, 0.15);
+  --shadow-hover: 0 20px 60px rgba(124, 58, 237, 0.12);
 }
-/* globals.css */
+
+/* ═══════════════════════════════════════════════════════
+   Base
+═══════════════════════════════════════════════════════ */
 
 body {
   font-family: var(--font-body);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
-.bg-charcoal {
-  --tw-bg-opacity: 1;
-  background-color: rgb(8 9 10 / var(--tw-bg-opacity, 1));
-}
-.bg-back {
-  background-color: #733aed;
-}
-.text-primary {
-  color: #ffffff;
-}
-.text-secondary {
-  color: #93a3af;
-}
-.text-theme-color {
-  color: #733aed;
+/* ═══════════════════════════════════════════════════════
+   Design System Utilities
+═══════════════════════════════════════════════════════ */
+
+/* Gradient text */
+.text-gradient {
+  background: var(--grad-brand);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
-/* styles.css or global.css */
-.button-theme-gradient {
-  @apply bg-gradient-to-r from-purple-700 to-fuchsia-600 text-white hover:opacity-90;
+.text-gradient-light {
+  background: linear-gradient(135deg, #a78bfa, #60a5fa);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
-/* ----------------------------------------- */
+
+/* Brand gradient background */
+.bg-brand {
+  background: var(--grad-brand);
+}
+
+.bg-hero {
+  background: var(--grad-hero);
+}
+
+/* Glass card */
+.glass {
+  background: rgba(255, 255, 255, 0.06);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.glass-light {
+  background: rgba(255, 255, 255, 0.72);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(124, 58, 237, 0.08);
+}
+
+/* Section label pill */
+.section-label {
+  @apply inline-flex items-center gap-2 text-xs font-bold uppercase tracking-[0.15em] text-violet-600 bg-violet-50 border border-violet-100 px-3 py-1.5 rounded-full mb-4;
+}
+
+.section-label-dark {
+  @apply inline-flex items-center gap-2 text-xs font-bold uppercase tracking-[0.15em] text-violet-300 bg-violet-950/40 border border-violet-700/40 px-3 py-1.5 rounded-full mb-4;
+}
+
+/* Glow ring button */
+.btn-primary {
+  @apply inline-flex items-center gap-2 px-7 py-3.5 rounded-full font-semibold text-sm text-white cursor-pointer transition-all duration-300;
+  background: var(--grad-brand);
+  box-shadow: 0 4px 20px rgba(124, 58, 237, 0.35);
+}
+.btn-primary:hover {
+  box-shadow: 0 8px 30px rgba(124, 58, 237, 0.45);
+  transform: translateY(-1px);
+}
+
+.btn-outline {
+  @apply inline-flex items-center gap-2 px-7 py-3.5 rounded-full font-semibold text-sm cursor-pointer transition-all duration-300 border-2 border-violet-500 text-violet-600 bg-transparent hover:bg-violet-50;
+}
+
+.btn-outline-white {
+  @apply inline-flex items-center gap-2 px-7 py-3.5 rounded-full font-semibold text-sm cursor-pointer transition-all duration-300 border-2 border-white/50 text-white bg-transparent hover:bg-white/10;
+}
+
+/* Card */
+.card {
+  @apply bg-white rounded-2xl border border-gray-100 p-6 transition-all duration-300;
+  box-shadow: var(--shadow-card);
+}
+.card:hover {
+  box-shadow: var(--shadow-hover);
+  transform: translateY(-4px);
+}
+
+.card-dark {
+  @apply rounded-2xl p-6 transition-all duration-300;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+.card-dark:hover {
+  background: rgba(255, 255, 255, 0.09);
+  border-color: rgba(99, 102, 241, 0.4);
+}
+
+/* Icon box */
+.icon-box {
+  @apply w-12 h-12 rounded-xl flex items-center justify-center shrink-0;
+  background: linear-gradient(135deg, #eef2ff, #e0e7ff);
+}
+
+.icon-box-brand {
+  @apply w-12 h-12 rounded-xl flex items-center justify-center shrink-0;
+  background: var(--grad-brand);
+}
+
+/* Dot grid pattern overlay */
+.dot-grid {
+  background-image: radial-gradient(circle, rgba(124, 58, 237, 0.1) 1px, transparent 1px);
+  background-size: 24px 24px;
+}
+
+/* Mesh gradient blob */
+.blob {
+  position: absolute;
+  border-radius: 9999px;
+  filter: blur(80px);
+  pointer-events: none;
+}
+
+/* ═══════════════════════════════════════════════════════
+   Footer
+═══════════════════════════════════════════════════════ */
 
 .theme-colors {
-  @apply bg-gradient-to-r from-purple-700 to-fuchsia-600;
+  background: linear-gradient(135deg, #2e1065 0%, #4c1d95 50%, #701a75 100%);
 }
 
-.section-header-underline {
-  @apply content-[''] block w-[60px] h-[4px] bg-blue-500 mx-auto mt-[10px] rounded-sm;
-}
+/* ═══════════════════════════════════════════════════════
+   Legacy / Compat
+   ═══════════════════════════════════════════════════════ */
 
-.theme-icons {
-  @apply text-purple-600;
-}
+.bg-charcoal { --tw-bg-opacity:1; background-color:rgb(8 9 10/var(--tw-bg-opacity,1)); }
+.bg-back { background-color:#8b5cf6; }
+.text-primary { color:#ffffff; }
+.text-secondary { color:#93a3af; }
+.text-theme-color { color:#7c3aed; }
+.button-theme-gradient { @apply bg-gradient-to-r from-fuchsia-600 to-violet-600 text-white hover:opacity-90; }
+.theme-icons { @apply text-violet-600; }
+.theme-text { @apply text-violet-600; }
+.section-header-underline { @apply content-[''] block w-[60px] h-[4px] bg-violet-500 mx-auto mt-[10px] rounded-sm; }
 
-.theme-text {
-  @apply text-purple-600;
-}
+/* ═══════════════════════════════════════════════════════
+   Scrollbar
+═══════════════════════════════════════════════════════ */
 
-/* ----------------------------------------- */
+.no-select { user-select:none; -webkit-user-select:none; }
+.container-x { max-width:1300px; margin-left:auto; margin-right:auto; }
+.scrollbar-hide { overflow:auto; scrollbar-width:none; -ms-overflow-style:none; }
+.scrollbar-hide::-webkit-scrollbar { display:none; }
 
-.no-select {
-  -webkit-touch-callout: none; /* iOS Safari */
-  -webkit-user-select: none; /* Safari */
-  -khtml-user-select: none; /* Konqueror HTML */
-  -moz-user-select: none; /* Old versions of Firefox */
-  -ms-user-select: none; /* Internet Explorer/Edge */
-  user-select: none; /* Non-prefixed version, currently supported by Chrome, Edge, Opera and Firefox */
-}
-
-.container-x {
-  max-width: 1300px;
-  margin-left: auto;
-  margin-right: auto;
-}
-
-/* Hide scrollbar but allow scroll - works in Chrome */
-.scrollbar-hide {
-  overflow: auto;
-  scrollbar-width: none; /* Firefox */
-  -ms-overflow-style: none; /* IE and Edge */
-}
-
-.scrollbar-hide::-webkit-scrollbar {
-  display: none; /* Chrome, Safari, Opera */
-}
-
-/* Scrollbar Styling */
-/* WebKit Browsers (Chrome, Edge, Safari) */
-::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
-}
-
-::-webkit-scrollbar-track {
-  background: rgba(243, 244, 246, 0.1); /* light gray transparent track */
-  border-radius: 10px;
-}
-
+::-webkit-scrollbar { width:6px; height:6px; }
+::-webkit-scrollbar-track { background:transparent; border-radius:10px; }
 ::-webkit-scrollbar-thumb {
-  background: linear-gradient(
-    to bottom,
-    #a855f7,
-    #ec4899
-  ); /* purple to pink gradient */
+  background: linear-gradient(to bottom, #d946ef, #8b5cf6);
   border-radius: 10px;
-  border: 2px solid transparent;
-  background-clip: content-box;
 }
-
 ::-webkit-scrollbar-thumb:hover {
-  background: linear-gradient(
-    to bottom,
-    #9333ea,
-    #db2777
-  ); /* deeper hover shade */
+  background: linear-gradient(to bottom, #c026d3, #7c3aed);
+}
+* { scrollbar-width:thin; scrollbar-color:#d946ef transparent; }
+
+/* ═══════════════════════════════════════════════════════
+   Animations
+═══════════════════════════════════════════════════════ */
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50%       { transform: translateY(-16px); }
 }
 
-/* Firefox Support */
-* {
-  scrollbar-width: thin;
-  scrollbar-color: #a855f7 #f3f4f6; /* thumb color and track color */
+@keyframes float-slow {
+  0%, 100% { transform: translateY(0px) rotate(0deg); }
+  50%       { transform: translateY(-10px) rotate(3deg); }
 }
 
-.cyber-background {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(10, 10, 15, 0.97);
-  pointer-events: none;
-  z-index: -1;
-  overflow: hidden;
+@keyframes shimmer {
+  0%   { background-position: -200% center; }
+  100% { background-position: 200% center; }
 }
 
-.cyber-grid {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 150%;
-  height: 150%;
-  background-image: linear-gradient(transparent 97%, rgba(0, 255, 255, 0.1) 0),
-    linear-gradient(90deg, transparent 97%, rgba(0, 255, 255, 0.1) 0);
-  background-size: 40px 40px;
-  opacity: 0.3;
-  transform-origin: top left;
-  animation: moveGrid 30s linear infinite;
+@keyframes pulse-glow {
+  0%, 100% { box-shadow: 0 0 20px rgba(217, 70, 239, 0.3); }
+  50%       { box-shadow: 0 0 40px rgba(217, 70, 239, 0.6); }
 }
 
-.cyber-glow {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: radial-gradient(
-    circle at 30% 50%,
-    rgba(0, 255, 255, 0.1) 0,
-    transparent 50%
-  );
-  animation: pulseGlow 10s ease-in-out infinite;
-  mix-blend-mode: screen;
-}
-
-.cyber-fade {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  width: 100%;
-  height: 300px;
-  background: linear-gradient(
-    180deg,
-    transparent,
-    rgba(0, 0, 0, 0.9) 50%,
-    #08090a
-  );
-}
-
-.wave-container {
-  display: flex;
-  height: 3rem;
-  align-items: center;
-  gap: 2px;
-}
-
-.bar-wave {
-  height: 4px;
-  width: 4px;
-  border-radius: 9999px;
-  background: linear-gradient(0deg, #06b6d4, #3b82f6);
-  transform-origin: bottom;
-  animation: wave 1.5s ease-in-out infinite;
-  transition: height 0.3s ease;
-}
-
-.glass {
-  background: rgba(255, 255, 255, 0.05);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-}
-
-@media print {
-  /* General Print Styles */
-  body {
-    -webkit-print-color-adjust: exact !important; /* Forces Chrome to print background colors and images */
-    print-color-adjust: exact !important;
-    margin: 0; /* Remove default body margins */
-    padding: 0; /* Remove default body padding */
-  }
-
-  /* Optimize for A4 or Letter page size */
-  @page {
-    size: Letter portrait; /* or A4 portrait */
-    margin: 0.5in; /* Consistent with html2pdf.js margin */
-  }
-
-  /* Hide elements not needed in print */
-  .no-print {
-    display: none !important;
-  }
-
-  /* Ensure background colors and images are printed */
-  .print-background {
-    background-color: inherit !important;
-    -webkit-print-color-adjust: exact !important;
-    print-color-adjust: exact !important;
-  }
-
-  /* Force page breaks where needed */
-  .page-break-before {
-    page-break-before: always !important;
-  }
-
-  .page-break-after {
-    page-break-after: always !important;
-  }
-
-  /* Avoid breaking elements across pages - MORE AGGRESSIVE */
-  /* Apply to sections and individual resume entries */
-  section, .print-avoid-break {
-    page-break-inside: avoid !important;
-  }
-  /* Ensure lists and list items stay together */
-  ul, ol, li {
-    page-break-inside: avoid !important;
-  }
-  .avoid-break { /* General class for other elements you don't want to break */
-    page-break-inside: avoid !important;
-  }
-
-  /* Adjust font sizes or line heights for print */
-  h1 {
-    font-size: 20pt !important;
-  }
-  h2 {
-    font-size: 14pt !important;
-  }
-  p, li {
-    font-size: 9pt !important; /* Common font size for body text in print resumes */
-    line-height: 1.4 !important; /* Optimal line height for readability */
-  }
-
-  /* Fine-tune bullet point spacing for print - REVISED */
-  ul.list-disc {
-    list-style-position: outside !important; /* Crucial for consistent bullet placement */
-    margin-left: 20pt !important; /* Overall indentation of the list from the left edge of the content area */
-    padding-left: 0 !important; /* Reset any default or Tailwind padding on the ul itself */
-  }
-  ul.list-disc li {
-    margin-left: 0 !important; /* Reset any margin on li */
-    text-indent: -10pt !important; /* Pulls the bullet back into the margin area */
-    padding-left: 10pt !important; /* Pushes the text to the right, creating space between bullet and text */
-    margin-bottom: 2pt !important; /* Small vertical gap between bullet points */
-  }
-
-  /* Border Refinement */
-  .border-b {
-    border-bottom: 1px solid #ccc !important; /* Lighter, more refined border color */
-  }
-
-  /* Adjust spacing for better print layout - REVISED */
-  /* Target the main resume container's padding */
-  .max-w-4xl.mx-auto.p-6 {
-    padding: 0 !important; /* Remove padding from this div as @page margins handle it */
-  }
-
-  .mb-4 { /* Target header margin */
-    margin-bottom: 10pt !important;
-  }
-  .mb-3 { /* Targeting adjusted Tailwind classes for sections */
-    margin-bottom: 8pt !important;
-  }
-  .mt-1\.5 { /* Targeting adjusted Tailwind classes for sub-sections */
-    margin-top: 6pt !important;
-  }
-  .pb-1 { /* Padding below section titles */
-    padding-bottom: 3pt !important;
-  }
-  .space-y-0\.5 > :not([hidden]) ~ :not([hidden]) { /* For tight vertical spacing in personal details */
-    margin-top: 2pt !important;
-  }
-}
-
-@media (max-width: 1024px) {
-  .container-x {
-    max-width: 1000px;
-    margin-left: auto;
-    margin-right: auto;
-  }
+@keyframes spin-slow {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
 }
 
 @keyframes wave {
-  0%,
-  100% {
-    height: 4px;
-  }
-  50% {
-    height: 30px;
-  }
+  0%, 100% { height:4px; }
+  50%       { height:30px; }
 }
 
 @keyframes moveGrid {
-  0% {
-    transform: translate(0, 0);
-  }
-  100% {
-    transform: translate(-40px, -40px);
-  }
+  0%   { transform:translate(0,0); }
+  100% { transform:translate(-40px,-40px); }
 }
 
-@keyframes pulseGlow {
-  0%,
-  100% {
-    opacity: 0.2;
-  }
-  50% {
-    opacity: 0.6;
-  }
+@keyframes fade-in-up {
+  from { opacity:0; transform:translateY(24px); }
+  to   { opacity:1; transform:translateY(0); }
+}
+
+.animate-float       { animation:float 6s ease-in-out infinite; }
+.animate-float-slow  { animation:float-slow 8s ease-in-out infinite; }
+.animate-pulse-glow  { animation:pulse-glow 3s ease-in-out infinite; }
+.animate-spin-slow   { animation:spin-slow 20s linear infinite; }
+.animate-fade-in-up  { animation:fade-in-up 0.6s ease-out both; }
+
+/* ═══════════════════════════════════════════════════════
+   Cyber / legacy backgrounds
+═══════════════════════════════════════════════════════ */
+
+.cyber-background { position:absolute; top:0; left:0; width:100%; height:100%;
+  background-color:rgba(10,10,15,0.97); pointer-events:none; z-index:-1; overflow:hidden; }
+.cyber-grid { position:absolute; top:0; left:0; width:150%; height:150%;
+  background-image:linear-gradient(transparent 97%,rgba(0,255,255,.1) 0),
+  linear-gradient(90deg,transparent 97%,rgba(0,255,255,.1) 0);
+  background-size:40px 40px; opacity:.3; transform-origin:top left; animation:moveGrid 30s linear infinite; }
+.cyber-glow { position:absolute; top:0; left:0; width:100%; height:100%;
+  background:radial-gradient(circle at 30% 50%,rgba(0,255,255,.1) 0,transparent 50%);
+  mix-blend-mode:screen; }
+.cyber-fade { position:absolute; bottom:0; left:0; width:100%; height:300px;
+  background:linear-gradient(180deg,transparent,rgba(0,0,0,.9) 50%,#08090a); }
+.wave-container { display:flex; height:3rem; align-items:center; gap:2px; }
+.bar-wave { height:4px; width:4px; border-radius:9999px;
+  background:linear-gradient(0deg,#06b6d4,#3b82f6); transform-origin:bottom;
+  animation:wave 1.5s ease-in-out infinite; transition:height .3s ease; }
+
+/* ═══════════════════════════════════════════════════════
+   Print Styles (unchanged)
+═══════════════════════════════════════════════════════ */
+
+@media print {
+  body { -webkit-print-color-adjust:exact!important; print-color-adjust:exact!important; margin:0; padding:0; }
+  @page { size:Letter portrait; margin:.5in; }
+  .no-print { display:none!important; }
+  .print-background { background-color:inherit!important; -webkit-print-color-adjust:exact!important; print-color-adjust:exact!important; }
+  .page-break-before { page-break-before:always!important; }
+  .page-break-after  { page-break-after:always!important; }
+  section, .print-avoid-break { page-break-inside:avoid!important; }
+  ul, ol, li { page-break-inside:avoid!important; }
+  .avoid-break { page-break-inside:avoid!important; }
+  h1 { font-size:20pt!important; }
+  h2 { font-size:14pt!important; }
+  p, li { font-size:9pt!important; line-height:1.4!important; }
+  ul.list-disc { list-style-position:outside!important; margin-left:20pt!important; padding-left:0!important; }
+  ul.list-disc li { margin-left:0!important; text-indent:-10pt!important; padding-left:10pt!important; margin-bottom:2pt!important; }
+  .border-b { border-bottom:1px solid #ccc!important; }
+  .max-w-4xl.mx-auto.p-6 { padding:0!important; }
+  .mb-4 { margin-bottom:10pt!important; }
+  .mb-3 { margin-bottom:8pt!important; }
+  .mt-1\.5 { margin-top:6pt!important; }
+  .pb-1 { padding-bottom:3pt!important; }
+  .space-y-0\.5 > :not([hidden]) ~ :not([hidden]) { margin-top:2pt!important; }
+}
+
+@media (max-width: 1024px) {
+  .container-x { max-width:1000px; margin-left:auto; margin-right:auto; }
 }
