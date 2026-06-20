@@ -19,9 +19,9 @@ export const metadata = {
   keywords:
     "academic intelligence platform India, AI mock interview, AI resume builder, student success platform, LMS India, college placement AI, QuestPodAI, aptitude test AI",
   icons: {
-    icon: "/favicons.svg",
-    shortcut: "/favicons.svg",
-    apple: "/favicons.svg",
+    icon: "/quest_icon.png",
+    shortcut: "/quest_icon.png",
+    apple: "/quest_icon.png",
   },
 };
 

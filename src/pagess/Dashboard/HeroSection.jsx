@@ -63,10 +63,10 @@ export default function HeroSection() {
       <div className="dot-grid absolute inset-0 pointer-events-none opacity-40" />
 
       {/* Floating widgets */}
-      <FloatWidget icon={FaBrain}       label="AI Academic Coach"       color="bg-indigo-500"  style={{ top: "26%",  left:  "7%"  }} delay={0.8} />
+      {/* <FloatWidget icon={FaBrain}       label="AI Academic Coach"       color="bg-indigo-500"  style={{ top: "26%",  left:  "7%"  }} delay={0.8} />
       <FloatWidget icon={FaBuilding}    label="Institutional Platform"  color="bg-violet-500"  style={{ top: "38%",  right: "6%"  }} delay={1.0} />
       <FloatWidget icon={FaGraduationCap} label="Career Readiness Score" color="bg-purple-500" style={{ bottom:"28%", left: "8%"  }} delay={1.2} />
-      <FloatWidget icon={FaChartLine}   label="Placement Intelligence"  color="bg-fuchsia-500" style={{ bottom:"22%", right:"7%"  }} delay={1.1} />
+      <FloatWidget icon={FaChartLine}   label="Placement Intelligence"  color="bg-fuchsia-500" style={{ bottom:"22%", right:"7%"  }} delay={1.1} /> */}
 
       {/* ── Main content ── */}
       <motion.div
@@ -135,7 +135,7 @@ export default function HeroSection() {
         </motion.div>
 
         {/* Trust line */}
-        <motion.div variants={fadeUp} className="flex items-center gap-3 mb-12">
+        {/* <motion.div variants={fadeUp} className="flex items-center gap-3 mb-12">
           <div className="flex -space-x-2">
             {["V", "K", "P", "A", "R"].map((l, i) => (
               <div
@@ -150,10 +150,10 @@ export default function HeroSection() {
           <p className="text-indigo-300 text-sm">
             Used by students, teachers & placement cells across India
           </p>
-        </motion.div>
+        </motion.div> */}
 
         {/* Video / Demo card */}
-        <motion.div
+        {/* <motion.div
           variants={fadeUp}
           className="w-full max-w-3xl"
         >
@@ -162,9 +162,9 @@ export default function HeroSection() {
             transition={{ type: "spring", stiffness: 200, damping: 25 }}
             className="relative rounded-3xl overflow-hidden border border-white/10 shadow-2xl animate-pulse-glow"
             style={{ boxShadow: "0 0 0 1px rgba(99,102,241,0.3), 0 40px 80px rgba(0,0,0,0.6)" }}
-          >
+          > */}
             {/* Top bar decoration */}
-            <div className="bg-[#1a1840]/90 backdrop-blur px-5 py-3 flex items-center gap-2 border-b border-white/10">
+            {/* <div className="bg-[#1a1840]/90 backdrop-blur px-5 py-3 flex items-center gap-2 border-b border-white/10">
               <div className="w-3 h-3 rounded-full bg-red-400/70" />
               <div className="w-3 h-3 rounded-full bg-yellow-400/70" />
               <div className="w-3 h-3 rounded-full bg-green-400/70" />
@@ -182,7 +182,7 @@ export default function HeroSection() {
               />
             </div>
           </motion.div>
-        </motion.div>
+        </motion.div> */}
       </motion.div>
 
       {/* Bottom fade */}

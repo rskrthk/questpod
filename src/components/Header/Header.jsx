@@ -93,6 +93,7 @@ export default function Header() {
     { label: "Home",            path: "/" },
     { label: "For Institutions", path: "/institutions" },
     { label: "For Students",    path: "/students" },
+    { label: "Case study",      path: "/case-study" },
     ...(isLoggedIn && userRole === "user" ? [{ label: "Jobs",    path: "/jobs"    }] : []),
     ...(isLoggedIn && userRole === "user" ? [{ label: "Profile", path: "/profile" }] : []),
     { label: "About",           path: "/about" },
@@ -159,7 +160,7 @@ export default function Header() {
             onClick={() => handleNavigate(isLoggedIn ? "/new-logindashboard" : "/")}
             className="flex items-center gap-2 shrink-0 cursor-pointer"
           >
-            <Image src="/Questpodai.svg" width={138} height={38} alt="QuestPodAI" priority />
+            <Image src="/quest_logo.png" width={138} height={38} alt="QuestPodAI" priority />
           </button>
 
           {/* ── Desktop Nav ── */}
